@@ -9,7 +9,7 @@ public class Main {
         System.out.println(parserHandler.parse());
 
 
-        HeaderDeserializer headerDeserializer = new HeaderDeserializer();
-        System.out.println(headerDeserializer.deserialize());
+/*        HeaderDeserializer headerDeserializer = new HeaderDeserializer();
+        System.out.println(headerDeserializer.deserialize());*/
     }
 }

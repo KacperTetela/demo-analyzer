@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/dem/*
+/src/main/resources/analyzed/*
