@@ -6,18 +6,21 @@ print(os.getcwd())
 dem = Demo(r"src\main\resources\dem\the-mongolz-vs-g2-m1-ancient.dem", verbose=True)
 dem.parse()
 
+for event_name, event in dem.events.items():
+    print(f"{event_name}: {event.shape[0]} rows x {event.shape[1]} columns")
+
 data_categories = {
     "header": dem.header,
-    "rounds": dem.rounds.head(n=1),
-    "kills": dem.kills.head(n=1),
-    "damages": dem.damages.head(n=1),
-    "shots": dem.shots.head(n=1),
-    "bomb": dem.bomb.head(n=1),
-    "smokes": dem.smokes.head(n=1),
-    "infernos": dem.infernos.head(n=1),
-    "grenades": dem.grenades.head(n=1),
-    "footsteps": dem.footsteps.head(n=1),
-    "ticks": dem.ticks.head(n=1),
+    "rounds": dem.rounds,
+    "kills": dem.kills.head(n=1000),
+    "damages": dem.damages.head(n=1000),
+    "shots": dem.shots.head(n=1000),
+    "bomb": dem.bomb.head(n=1000),
+    "smokes": dem.smokes.head(n=1000),
+    "infernos": dem.infernos.head(n=1000),
+    "grenades": dem.grenades.head(n=1000),
+    "footsteps": dem.footsteps.head(n=1000),
+    "ticks": dem.ticks.head(n=1000),
 }
 
 # Zapisywanie plików w folderze analyzed

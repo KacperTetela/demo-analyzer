@@ -10,9 +10,9 @@ public class ParserHandler {
     public boolean parse() {
         try {
             // Full path to Python in the .venv virtual environment
-            String pythonPath = "C:\\Users\\kacpe\\IdeaProjects\\DemoAnalyzer\\src\\main\\resources\\AwpyDemoParser\\.venv\\Scripts\\python.exe";
+            String pythonPath = "C:\\Users\\kacpe\\IdeaProjects\\DemoAnalyzer\\src\\main\\resources\\awpy\\.venv\\Scripts\\python.exe";
             // Ścieżka do skryptu Pythona
-            String pythonScriptPath = "C:\\Users\\kacpe\\IdeaProjects\\DemoAnalyzer\\src\\main\\resources\\AwpyDemoParser\\Info.py";
+            String pythonScriptPath = "C:\\Users\\kacpe\\IdeaProjects\\DemoAnalyzer\\src\\main\\resources\\awpy\\Info.py";
 
             // We create a process to run Python
             ProcessBuilder pb = new ProcessBuilder(pythonPath, pythonScriptPath);
