@@ -1,4 +1,4 @@
-package demoanalyzer.com.domain.header;
+package demoanalyzer.com.domain.conversion.header;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

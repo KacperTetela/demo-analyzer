@@ -1,6 +1,6 @@
 package demoanalyzer.com.domain;
 
-import demoanalyzer.com.domain.header.HeaderDeserializer;
+import demoanalyzer.com.domain.conversion.header.HeaderDeserializer;
 import demoanalyzer.com.domain.parserhandler.ParserHandler;
 
 public class Main {

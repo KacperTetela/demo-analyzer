@@ -9,7 +9,7 @@ data_categories = {
     "header": dem.header,
     "rounds": dem.rounds,
     "kills": dem.kills,
-    "damages": dem.damages,
+    "DamagesDeserializer": dem.damages,
     "shots": dem.shots,
     "bomb": dem.bomb,
     "smokes": dem.smokes,
