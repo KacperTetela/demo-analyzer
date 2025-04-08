@@ -1,18 +1,18 @@
 package demoanalyzer.com.domain.analyzer;
 
-import demoanalyzer.com.domain.replay.ReplayService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnalyzerService {
-    private final ReplayService replayService;
 
-    public AnalyzerService(ReplayService replayService) {
-        this.replayService = replayService;
+  private ReplayAdapter replayAdapter;
+
+    public AnalyzerService(ReplayAdapter replayAdapter) {  //late binding
+        this.replayAdapter = replayAdapter;
     }
 
-    public String getMapName() {
-        return replayService.getMapName();
+    public BasicDTO getBasicReplayInfo() {
+        return replayAdapter.getBasicReplayInfo();
     }
 
 }

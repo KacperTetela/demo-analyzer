@@ -1,6 +1,7 @@
 package demoanalyzer.com.infrastructure;
 
 import demoanalyzer.com.domain.analyzer.AnalyzerService;
+import demoanalyzer.com.domain.analyzer.BasicDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,8 +14,11 @@ public class MainController {
     }
 
     @GetMapping
-    public String getMapName() {
-        return analyzerService.getMapName();
+    public BasicDTO getBasicReplayInfo() {
+
+
+
+        return analyzerService.getBasicReplayInfo();
     }
 
 }
