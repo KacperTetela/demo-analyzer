@@ -1,34 +1,39 @@
 import os
+import json
 from awpy import Demo
-
-print(os.getcwd())
 
 dem = Demo(r"src\main\resources\dem\the-mongolz-vs-g2-m1-ancient.dem", verbose=True)
 dem.parse()
 
-for event_name, event in dem.events.items():
-    print(f"{event_name}: {event.shape[0]} rows x {event.shape[1]} columns")
-
 data_categories = {
     "header": dem.header,
     "rounds": dem.rounds,
-    "kills": dem.kills.head(n=1000),
-    "damages": dem.damages.head(n=1000),
-    "shots": dem.shots.head(n=1000),
-    "bomb": dem.bomb.head(n=1000),
-    "smokes": dem.smokes.head(n=1000),
-    "infernos": dem.infernos.head(n=1000),
-    "grenades": dem.grenades.head(n=1000),
-    "footsteps": dem.footsteps.head(n=1000),
-    "ticks": dem.ticks.head(n=1000),
+    "kills": dem.kills,
+    "damages": dem.damages,
+    "shots": dem.shots,
+    "bomb": dem.bomb,
+    "smokes": dem.smokes,
+    "infernos": dem.infernos,
+    "grenades": dem.grenades,
+    "footsteps": dem.footsteps,
+    "ticks": dem.ticks,
 }
 
-# Zapisywanie plików w folderze analyzed
+output_dir = r"src\main\resources\analyzed"
+os.makedirs(output_dir, exist_ok=True)
+
 for category, data in data_categories.items():
-    file_path = os.path.join(r"src\main\resources\analyzed", f"{category}.txt")
-    with open(file_path, "w", encoding="utf-8") as file:
-        file.write(str(data))
+    try:
+        if category == "header":
+            file_path = os.path.join(output_dir, f"{category}.json")
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+        else:
+            file_path = os.path.join(output_dir, f"{category}.csv")
+            data.to_pandas().to_csv(file_path, index=False)
 
-print("File saved")
+        print(f"Category data '{category}' saved to: {file_path}")
+    except Exception as e:
+        print(f"Error while saving category '{category}': {e}")
 
-dem.ticks.to_pandas()
+print("All data has been saved")
