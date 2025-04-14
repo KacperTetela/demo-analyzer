@@ -11,11 +11,11 @@ import java.util.Optional;
 @Service
 public class ReplayService implements ReplayAdapter {
 
-    public BasicDTO getBasicReplayInfo() {
-        HeaderDeserializer headerDeserializer = new HeaderDeserializer();
-        Optional<HeaderEvent> headerEventOptional = headerDeserializer.deserialize();
-        String mapName = headerEventOptional.get().map_name();
-        String serverName = headerEventOptional.get().server_name();
-        return new BasicDTO(mapName, serverName);
-    }
+  public BasicDTO getBasicReplayInfo() {
+    HeaderDeserializer headerDeserializer = new HeaderDeserializer();
+    Optional<HeaderEvent> headerEventOptional = headerDeserializer.deserialize();
+    String mapName = headerEventOptional.get().map_name();
+    String serverName = headerEventOptional.get().server_name();
+    return new BasicDTO(mapName, serverName);
+  }
 }

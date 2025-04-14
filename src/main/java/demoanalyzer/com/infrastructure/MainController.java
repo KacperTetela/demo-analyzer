@@ -7,18 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MainController {
-    private final AnalyzerService analyzerService;
+  private final AnalyzerService analyzerService;
 
-    public MainController(AnalyzerService analyzerService) {
-        this.analyzerService = analyzerService;
-    }
+  public MainController(AnalyzerService analyzerService) {
+    this.analyzerService = analyzerService;
+  }
 
-    @GetMapping
-    public BasicDTO getBasicReplayInfo() {
+  @GetMapping
+  public BasicDTO getBasicReplayInfo() {
 
-
-
-        return analyzerService.getBasicReplayInfo();
-    }
-
+    return analyzerService.getBasicReplayInfo();
+  }
 }
