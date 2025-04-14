@@ -3,7 +3,9 @@ package demoanalyzer.com.common;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,9 @@ import java.util.Map;
 public class CsvDeserializer<T> {
   private final Class<T> recordType;
   private final Map<String, Field> fieldMap;
+  private final boolean isJavaRecord;
+  private RecordComponent[] recordComponents;
+  private Constructor<T> recordConstructor;
 
   /**
    * Constructor of the CsvDeserializer class.
@@ -22,10 +27,32 @@ public class CsvDeserializer<T> {
     this.recordType = recordType;
     this.fieldMap = new HashMap<>();
 
-    // Mapowanie nazw pól klasy do obiektów Field
-    for (Field field : recordType.getDeclaredFields()) {
-      field.setAccessible(true);
-      fieldMap.put(field.getName().toLowerCase(), field);
+    this.isJavaRecord = recordType.isRecord();
+
+    if (isJavaRecord) {
+      this.recordComponents = recordType.getRecordComponents();
+
+      for (RecordComponent component : recordComponents) {
+        fieldMap.put(component.getName().toLowerCase(), null);
+      }
+
+      // Find canonical constructor
+      try {
+        Class<?>[] paramTypes = new Class<?>[recordComponents.length];
+        for (int i = 0; i < recordComponents.length; i++) {
+          paramTypes[i] = recordComponents[i].getType();
+        }
+        this.recordConstructor = recordType.getDeclaredConstructor(paramTypes);
+      } catch (NoSuchMethodException e) {
+        throw new RuntimeException(
+            "Could not find canonical constructor for record: " + recordType.getName(), e);
+      }
+    } else {
+      // Initialization for traditional classes**
+      for (Field field : recordType.getDeclaredFields()) {
+        field.setAccessible(true);
+        fieldMap.put(field.getName().toLowerCase(), field);
+      }
     }
   }
 
@@ -47,11 +74,24 @@ public class CsvDeserializer<T> {
       }
 
       String[] headers = headerLine.split(",");
-      Map<Integer, Field> columnToFieldMap = mapColumnsToFields(headers);
 
-      String line;
-      while ((line = reader.readLine()) != null) {
-        result.add(parseLine(line, columnToFieldMap));
+      // In the case of records, we need to know the mapping of CSV headers to the constructor parameters
+      Map<String, Integer> headerIndexMap = new HashMap<>();
+      for (int i = 0; i < headers.length; i++) {
+        headerIndexMap.put(headers[i].trim().toLowerCase(), i);
+      }
+
+      if (isJavaRecord) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          result.add(parseLineForRecord(line, headerIndexMap));
+        }
+      } else {
+        Map<Integer, Field> columnToFieldMap = mapColumnsToFields(headers);
+        String line;
+        while ((line = reader.readLine()) != null) {
+          result.add(parseLineForClass(line, columnToFieldMap));
+        }
       }
     }
 
@@ -79,14 +119,14 @@ public class CsvDeserializer<T> {
   }
 
   /**
-   * Parses a CSV row into an object of type T.
+   * Parses a CSV row into an object of type T when T is a regular class.
    *
    * @param line the CSV data row
    * @param columnMap a map of column indexes to Field objects
    * @return an object of type T with populated data
    * @throws ReflectiveOperationException if an error occurs while creating the object
    */
-  private T parseLine(String line, Map<Integer, Field> columnMap)
+  private T parseLineForClass(String line, Map<Integer, Field> columnMap)
       throws ReflectiveOperationException {
     String[] values = line.split(",");
     T instance = recordType.getDeclaredConstructor().newInstance();
@@ -105,6 +145,34 @@ public class CsvDeserializer<T> {
   }
 
   /**
+   * Parses a CSV row into an object of type T when T is a Java Record.
+   *
+   * @param line the CSV data row
+   * @param headerIndexMap a map of header names to their column indexes
+   * @return a record of type T with populated data
+   * @throws ReflectiveOperationException if an error occurs while creating the record
+   */
+  private T parseLineForRecord(String line, Map<String, Integer> headerIndexMap)
+      throws ReflectiveOperationException {
+    String[] values = line.split(",");
+    Object[] constructorArgs = new Object[recordComponents.length];
+
+    for (int i = 0; i < recordComponents.length; i++) {
+      String componentName = recordComponents[i].getName().toLowerCase();
+      Integer columnIndex = headerIndexMap.get(componentName);
+
+      if (columnIndex != null && columnIndex < values.length) {
+        String value = values[columnIndex].trim();
+        constructorArgs[i] = convertValueToType(value, recordComponents[i].getType());
+      } else {
+        constructorArgs[i] = getDefaultValue(recordComponents[i].getType());
+      }
+    }
+
+    return recordConstructor.newInstance(constructorArgs);
+  }
+
+  /**
    * Sets the value of a field in an object based on the field's type.
    *
    * @param instance the object whose field should be set
@@ -114,23 +182,57 @@ public class CsvDeserializer<T> {
    */
   private void setFieldValue(T instance, Field field, String value) throws IllegalAccessException {
     Class<?> fieldType = field.getType();
-
     try {
-      if (fieldType == String.class) {
-        field.set(instance, value);
-      } else if (fieldType == int.class || fieldType == Integer.class) {
-        field.set(instance, Integer.parseInt(value));
-      } else if (fieldType == long.class || fieldType == Long.class) {
-        field.set(instance, Long.parseLong(value));
-      } else if (fieldType == double.class || fieldType == Double.class) {
-        field.set(instance, Double.parseDouble(value));
-      } else if (fieldType == float.class || fieldType == Float.class) {
-        field.set(instance, Float.parseFloat(value));
-      } else if (fieldType == boolean.class || fieldType == Boolean.class) {
-        field.set(instance, Boolean.parseBoolean(value));
+      Object convertedValue = convertValueToType(value, fieldType);
+      if (convertedValue != null) {
+        field.set(instance, convertedValue);
       }
     } catch (NumberFormatException e) {
       System.err.println("Conversion Error, Value '" + value + "' for " + field.getName());
     }
+  }
+
+  /**
+   * Converts a string value to the specified type.
+   *
+   * @param value the string value to convert
+   * @param type the target type
+   * @return the converted value
+   */
+  private Object convertValueToType(String value, Class<?> type) {
+    if (value == null || value.isEmpty()) {
+      return getDefaultValue(type);
+    }
+
+    if (type == String.class) {
+      return value;
+    } else if (type == int.class || type == Integer.class) {
+      return Integer.parseInt(value);
+    } else if (type == long.class || type == Long.class) {
+      return Long.parseLong(value);
+    } else if (type == double.class || type == Double.class) {
+      return Double.parseDouble(value);
+    } else if (type == float.class || type == Float.class) {
+      return Float.parseFloat(value);
+    } else if (type == boolean.class || type == Boolean.class) {
+      return Boolean.parseBoolean(value);
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the default value for a given type.
+   *
+   * @param type the type to get a default value for
+   * @return the default value (0, false, or null)
+   */
+  private Object getDefaultValue(Class<?> type) {
+    if (type == int.class) return 0;
+    else if (type == long.class) return 0L;
+    else if (type == double.class) return 0.0;
+    else if (type == float.class) return 0.0f;
+    else if (type == boolean.class) return false;
+    else return null;
   }
 }

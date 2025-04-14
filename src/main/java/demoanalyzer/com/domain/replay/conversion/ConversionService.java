@@ -94,19 +94,4 @@ public class ConversionService {
       e.printStackTrace();
     }
   }
-
-  /*  void convertEvent(String fileName) {
-    try {
-      CsvDeserializer<BombEvent> deserializer = new CsvDeserializer<>(BombEvent.class);
-      List<BombEvent> events = deserializer.deserialize(fileName + ".csv");
-
-      for (BombEvent event : events) {
-        System.out.println(event);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  void convertAllEvents() {}*/
 }

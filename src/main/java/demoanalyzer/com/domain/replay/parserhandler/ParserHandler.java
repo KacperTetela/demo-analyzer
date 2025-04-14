@@ -12,8 +12,7 @@ public class ParserHandler {
       String pythonPath =
           "src\\main\\resources\\awpy\\.venv\\Scripts\\python.exe";
       // Ścieżka do skryptu Pythona
-      String pythonScriptPath =
-          "src\\main\\resources\\awpy\\Info.py";
+      String pythonScriptPath = "src\\main\\resources\\awpy\\Info.py";
 
       // We create a process to run Python
       ProcessBuilder pb = new ProcessBuilder(pythonPath, pythonScriptPath);
