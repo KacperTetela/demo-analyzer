@@ -14,6 +14,7 @@ import java.util.Map;
 public class CsvDeserializer<T> {
   private final Class<T> recordType;
   private final Map<String, Field> fieldMap;
+  private final Map<String, String> csvToFieldNameMap; // Mapa nazw CSV -> nazwy pól Java
   private final boolean isJavaRecord;
   private RecordComponent[] recordComponents;
   private Constructor<T> recordConstructor;
@@ -26,17 +27,28 @@ public class CsvDeserializer<T> {
   public CsvDeserializer(Class<T> recordType) {
     this.recordType = recordType;
     this.fieldMap = new HashMap<>();
+    this.csvToFieldNameMap = new HashMap<>();
 
+    // Sprawdź, czy klasa jest Java Record
     this.isJavaRecord = recordType.isRecord();
 
     if (isJavaRecord) {
+      // Inicjalizacja dla Java Records
       this.recordComponents = recordType.getRecordComponents();
 
+      // Tworzenie mapy nazw komponentów rekordu
       for (RecordComponent component : recordComponents) {
-        fieldMap.put(component.getName().toLowerCase(), null);
+        String fieldName = component.getName();
+
+        // Automatyczna konwersja camelCase -> snake_case
+        String snakeCaseName = convertCamelToSnakeCase(fieldName);
+        csvToFieldNameMap.put(snakeCaseName.toLowerCase(), fieldName);
+
+        // Zachowaj także oryginalną nazwę jako mapowanie
+        csvToFieldNameMap.put(fieldName.toLowerCase(), fieldName);
       }
 
-      // Find canonical constructor
+      // Znajdź konstruktor kanoniczny
       try {
         Class<?>[] paramTypes = new Class<?>[recordComponents.length];
         for (int i = 0; i < recordComponents.length; i++) {
@@ -48,12 +60,31 @@ public class CsvDeserializer<T> {
             "Could not find canonical constructor for record: " + recordType.getName(), e);
       }
     } else {
-      // Initialization for traditional classes**
+      // Inicjalizacja dla tradycyjnych klas
       for (Field field : recordType.getDeclaredFields()) {
         field.setAccessible(true);
-        fieldMap.put(field.getName().toLowerCase(), field);
+        String fieldName = field.getName();
+        fieldMap.put(fieldName.toLowerCase(), field);
+
+        // Automatyczna konwersja camelCase -> snake_case
+        String snakeCaseName = convertCamelToSnakeCase(fieldName);
+        csvToFieldNameMap.put(snakeCaseName.toLowerCase(), fieldName);
+
+        // Zachowaj także oryginalną nazwę jako mapowanie
+        csvToFieldNameMap.put(fieldName.toLowerCase(), fieldName);
       }
     }
+  }
+
+  /**
+   * Converts a camelCase string to snake_case. For example: "attackerHealth" becomes
+   * "attacker_health"
+   *
+   * @param camelCase the camelCase string
+   * @return the snake_case equivalent
+   */
+  private String convertCamelToSnakeCase(String camelCase) {
+    return camelCase.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
   }
 
   /**
@@ -75,7 +106,7 @@ public class CsvDeserializer<T> {
 
       String[] headers = headerLine.split(",");
 
-      // In the case of records, we need to know the mapping of CSV headers to the constructor parameters
+      // Mapuj nagłówki CSV do ich indeksów
       Map<String, Integer> headerIndexMap = new HashMap<>();
       for (int i = 0; i < headers.length; i++) {
         headerIndexMap.put(headers[i].trim().toLowerCase(), i);
@@ -109,9 +140,20 @@ public class CsvDeserializer<T> {
 
     for (int i = 0; i < headers.length; i++) {
       String header = headers[i].trim().toLowerCase();
-      Field field = fieldMap.get(header);
-      if (field != null) {
-        columnMap.put(i, field);
+
+      // Spróbuj znaleźć mapowanie nazwy CSV na nazwę pola Java
+      String fieldName = csvToFieldNameMap.get(header);
+      if (fieldName != null) {
+        Field field = fieldMap.get(fieldName.toLowerCase());
+        if (field != null) {
+          columnMap.put(i, field);
+        }
+      } else {
+        // Bezpośrednie dopasowanie, jeśli nie ma mapowania
+        Field field = fieldMap.get(header);
+        if (field != null) {
+          columnMap.put(i, field);
+        }
       }
     }
 
@@ -157,15 +199,28 @@ public class CsvDeserializer<T> {
     String[] values = line.split(",");
     Object[] constructorArgs = new Object[recordComponents.length];
 
+    // Wypełnij tablicę argumentów konstruktora
     for (int i = 0; i < recordComponents.length; i++) {
-      String componentName = recordComponents[i].getName().toLowerCase();
-      Integer columnIndex = headerIndexMap.get(componentName);
+      RecordComponent component = recordComponents[i];
+      String componentName = component.getName();
+      Class<?> componentType = component.getType();
+
+      // Konwertuj nazwę pola na snake_case dla porównania
+      String snakeCaseName = convertCamelToSnakeCase(componentName);
+
+      // Sprawdź, czy istnieje kolumna CSV o tej samej nazwie (camelCase lub snake_case)
+      Integer columnIndex = headerIndexMap.get(componentName.toLowerCase());
+      if (columnIndex == null) {
+        // Sprawdź wersję snake_case
+        columnIndex = headerIndexMap.get(snakeCaseName.toLowerCase());
+      }
 
       if (columnIndex != null && columnIndex < values.length) {
         String value = values[columnIndex].trim();
-        constructorArgs[i] = convertValueToType(value, recordComponents[i].getType());
+        constructorArgs[i] = convertValueToType(value, componentType);
       } else {
-        constructorArgs[i] = getDefaultValue(recordComponents[i].getType());
+        // Jeśli nie znaleziono kolumny, użyj wartości domyślnej
+        constructorArgs[i] = getDefaultValue(componentType);
       }
     }
 
@@ -233,6 +288,6 @@ public class CsvDeserializer<T> {
     else if (type == double.class) return 0.0;
     else if (type == float.class) return 0.0f;
     else if (type == boolean.class) return false;
-    else return null;
+    else return null; // Dla typów obiektowych
   }
 }

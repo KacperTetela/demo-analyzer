@@ -1,4 +1,3 @@
 package demoanalyzer.com.domain.replay.conversion;
 
-public record InfernosEvent() {
-}
+public record InfernosEvent(long tick) {}

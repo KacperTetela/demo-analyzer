@@ -1,3 +1,3 @@
 package demoanalyzer.com.domain.replay.conversion;
 
-public record SmokesEvent() {}
+public record SmokesEvent(long tick) {}

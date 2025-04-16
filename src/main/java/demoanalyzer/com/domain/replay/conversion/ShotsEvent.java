@@ -1,4 +1,3 @@
 package demoanalyzer.com.domain.replay.conversion;
 
-public record ShotsEvent() {
-}
+public record ShotsEvent(long tick) {}
