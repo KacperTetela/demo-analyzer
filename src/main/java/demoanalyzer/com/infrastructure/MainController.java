@@ -2,7 +2,7 @@ package demoanalyzer.com.infrastructure;
 
 import demoanalyzer.com.domain.analyzer.AnalyzerService;
 import demoanalyzer.com.domain.analyzer.BasicDTO;
-import demoanalyzer.com.domain.analyzer.EntryDTO;
+import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

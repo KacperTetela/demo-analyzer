@@ -11,4 +11,5 @@ public record DamagesEvent(
     int dmgHealth,
     int health,
     String hitGroup,
-    String weapon) {}
+    String weapon)
+    implements GameplayEvent {}

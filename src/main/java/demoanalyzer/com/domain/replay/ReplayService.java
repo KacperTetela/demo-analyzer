@@ -3,6 +3,7 @@ package demoanalyzer.com.domain.replay;
 import demoanalyzer.com.domain.analyzer.BasicDTO;
 import demoanalyzer.com.domain.analyzer.ReplayAdapter;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
+import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.RoundsEvent;
 import demoanalyzer.com.domain.replay.conversion.header.HeaderDeserializer;
@@ -15,6 +16,11 @@ import java.util.Optional;
 
 @Service
 public class ReplayService implements ReplayAdapter {
+  private final GameplayDeserializer gameplayDeserializer;
+
+  public ReplayService() {
+    gameplayDeserializer = new GameplayDeserializer();
+  }
 
   public BasicDTO getBasicReplayInfo() {
     HeaderDeserializer headerDeserializer = new HeaderDeserializer();
@@ -24,17 +30,9 @@ public class ReplayService implements ReplayAdapter {
     return new BasicDTO(mapName, serverName);
   }
 
-  private List<KillsEvent> getKillsInfo() {
-    GameplayDeserializer gameplayDeserializer = new GameplayDeserializer();
-    gameplayDeserializer.processAllCsvFiles();
-
-    return new ArrayList<KillsEvent>();
-  }
-
-  private List<RoundsEvent> getRoundsInfo() {
-    GameplayDeserializer gameplayDeserializer = new GameplayDeserializer();
-    gameplayDeserializer.processAllCsvFiles();
-
-    return new ArrayList<RoundsEvent>();
+  @Override
+  public <T extends GameplayEvent> List<T> getGameplayEvents(Class<T> eventType) {
+    GameplayDeserializer deserializer = new GameplayDeserializer();
+    return deserializer.processSpecificEventType(eventType);
   }
 }
