@@ -1,8 +1,6 @@
 package demoanalyzer.com.domain;
 
-import demoanalyzer.com.domain.replay.conversion.ConversionService;
-import demoanalyzer.com.domain.replay.conversion.header.HeaderDeserializer;
-import demoanalyzer.com.domain.replay.parserhandler.ParserHandler;
+import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
 
 public class Main {
   public static void main(String[] args) {
@@ -12,7 +10,7 @@ public class Main {
     /*        HeaderDeserializer headerDeserializer = new HeaderDeserializer();
     System.out.println(headerDeserializer.deserialize());*/
 
-    ConversionService conversionService = new ConversionService();
-    conversionService.processAllCsvFiles();
+    GameplayDeserializer gameplayDeserializer = new GameplayDeserializer();
+    gameplayDeserializer.processAllCsvFiles();
   }
 }

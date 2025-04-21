@@ -1,7 +1,8 @@
-package demoanalyzer.com.domain.replay.conversion;
+package demoanalyzer.com.domain.replay.conversion.gameplay;
 
 public record DamagesEvent(
     long tick,
+    int round_num,
     double armor,
     double attackerHealth,
     String attackerPlace,
@@ -10,5 +11,4 @@ public record DamagesEvent(
     int dmgHealth,
     int health,
     String hitGroup,
-    String weapon,
-    int round_num) {}
+    String weapon) {}

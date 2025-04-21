@@ -1,4 +1,4 @@
-package demoanalyzer.com.domain.replay.conversion;
+package demoanalyzer.com.domain.replay.conversion.gameplay;
 
 import demoanalyzer.com.common.CsvDeserializer;
 
@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConversionService {
+public class GameplayDeserializer {
 
   private static final String DATA_DIRECTORY = "src\\main\\resources\\analyzed";
 
   // A map mapping file names to the appropriate record classes
   private final Map<String, Class<?>> recordTypeMap;
 
-  public ConversionService() {
+  public GameplayDeserializer() {
     this.recordTypeMap = initializeRecordTypeMap();
   }
 
