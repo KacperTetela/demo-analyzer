@@ -25,4 +25,10 @@ public class MainController {
   public List<EntryDTO> getEntryInfo() {
     return analyzerService.getEntryInfo();
   }
+
+  @GetMapping("/clutch")
+  public void getClutchInfo() {}
+
+  @GetMapping("/trade")
+  public void getTradeInfo() {}
 }

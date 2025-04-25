@@ -10,7 +10,7 @@ import java.util.List;
 public class EntryAnalyzer {
 
   public List<EntryDTO> analyzeEntryFrags(
-      List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents) {
+          List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents) {
     List<EntryDTO> entries = new ArrayList<>();
 
     // Sortuj eventy killów według ticku (czas)
@@ -19,9 +19,10 @@ public class EntryAnalyzer {
     // Dla każdej rundy znajdź pierwszy kill
     for (RoundsEvent round : roundsEvents) {
       KillsEvent firstKill = findFirstKillInRound(killsEvents, round);
-
       if (firstKill != null) {
-        EntryDTO entry = createEntryDTO(firstKill, round);
+        EntryDTO entry =
+            new EntryDTO(
+                round.roundNum(), firstKill.attackerName(), didTeamWinRound(round, firstKill));
         entries.add(entry);
       }
     }
@@ -37,15 +38,10 @@ public class EntryAnalyzer {
         .orElse(null);
   }
 
-  private EntryDTO createEntryDTO(KillsEvent kill, RoundsEvent round) {
-    double timeFromRoundStart = (kill.tick() - round.start()) / 128.0; // 128 ticków = 1 sekunda
-
-    return new EntryDTO(round.roundNum(), kill.attackerName(), true);
+  private boolean didTeamWinRound(RoundsEvent round, KillsEvent killsEvent) {
+    if (round.roundNum() == killsEvent.roundNum()) {
+      return round.winner().equals(killsEvent.attackerSide());
+    }
+    return false;
   }
-
-  /*  private boolean didTeamWinRound(EntryDTO entry, List<RoundsEvent> rounds) {
-    return rounds.stream()
-        .filter(round -> round.roundNumber() == entry.round())
-        .anyMatch(round -> round.winnerSide().equals(entry.side()));
-  }*/
 }

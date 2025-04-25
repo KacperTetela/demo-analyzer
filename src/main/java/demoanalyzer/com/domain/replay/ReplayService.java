@@ -4,13 +4,10 @@ import demoanalyzer.com.domain.analyzer.BasicDTO;
 import demoanalyzer.com.domain.analyzer.ReplayAdapter;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayEvent;
-import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
-import demoanalyzer.com.domain.replay.conversion.gameplay.RoundsEvent;
 import demoanalyzer.com.domain.replay.conversion.header.HeaderDeserializer;
 import demoanalyzer.com.domain.replay.conversion.header.HeaderEvent;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

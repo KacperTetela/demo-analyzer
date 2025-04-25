@@ -1,5 +1,6 @@
 package demoanalyzer.com.domain.analyzer;
 
+import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryAnalyzer;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
@@ -29,13 +30,11 @@ public class AnalyzerService {
     List<RoundsEvent> roundsEvents = replayAdapter.getGameplayEvents(RoundsEvent.class);
 
     return entryAnalyzer.analyzeEntryFrags(killsEvents, roundsEvents);
-
-/*    // for example
-    EntryDTO entry1 = new EntryDTO(1, "Snax", true);
-    EntryDTO entry2 = new EntryDTO(2, "Malbs", false);
-    List<EntryDTO> entryDTOs = new ArrayList<>();
-    entryDTOs.add(entry1);
-    entryDTOs.add(entry2);
-    return entryDTOs;*/
   }
+
+  public List<ClutchDTO> getClutchInfo() {
+    return null;
+  }
+
+  public void getInformationAboutSquads() {}
 }

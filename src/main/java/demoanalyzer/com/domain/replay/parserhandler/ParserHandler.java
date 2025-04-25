@@ -9,8 +9,7 @@ public class ParserHandler {
   public boolean parse() {
     try {
       // Full path to Python in the .venv virtual environment
-      String pythonPath =
-          "src\\main\\resources\\awpy\\.venv\\Scripts\\python.exe";
+      String pythonPath = "src\\main\\resources\\awpy\\.venv\\Scripts\\python.exe";
       // Ścieżka do skryptu Pythona
       String pythonScriptPath = "src\\main\\resources\\awpy\\Info.py";
 
