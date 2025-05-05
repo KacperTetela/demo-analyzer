@@ -22,7 +22,7 @@ public class AnalyzerService {
   public AnalyzerService(ReplayAdapter replayAdapter) {
     this.replayAdapter = replayAdapter;
     this.entryAnalyzer = new EntryAnalyzer();
-    this.clutchAnalyzer = new ClutchAnalyzer();
+    this.clutchAnalyzer = new ClutchAnalyzer(getBasicReplayInfo());
   }
 
   public GameDetailsDTO getBasicReplayInfo() {

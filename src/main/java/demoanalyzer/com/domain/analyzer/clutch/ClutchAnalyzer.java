@@ -1,20 +1,24 @@
 package demoanalyzer.com.domain.analyzer.clutch;
 
+import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.RoundsEvent;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ClutchAnalyzer {
+
+  private final GameDetailsDTO gameDetails;
+
+  public ClutchAnalyzer(GameDetailsDTO gameDetails) {
+    this.gameDetails = gameDetails;
+  }
 
   public List<ClutchDTO> analyzeClutch(
       List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents) {
 
     // Inicjalizacja listy wynikowej
     List<ClutchDTO> clutches = new ArrayList<>();
-
 
     // Iteracja po rundach
     for (RoundsEvent round : roundsEvents) {
@@ -23,27 +27,27 @@ public class ClutchAnalyzer {
       String clutcherName = "";
       int amountOfEnemies = 0;
       // liczba żywych graczy
-      int victimT = 5;
-      int victimCT = 5;
+      List<String> victimsT = new ArrayList<>();
+      List<String> victimsCT = new ArrayList<>();
 
       for (KillsEvent kill :
           killsEvents.stream()
               .filter(killsEvent -> killsEvent.roundNum() == round.roundNum())
               .sorted(Comparator.comparing(KillsEvent::tick))
               .toList()) {
-        if (kill.victimSide().equals("CT")) victimCT--;
-        else victimT--;
+        if (kill.victimSide().equals("CT")) victimsCT.add(kill.victimName());
+        else victimsT.add(kill.victimName());
 
-        if (clutchForSide.equals("")) {
-          if (victimT == 1) {
+        if (clutchForSide.isEmpty()) {
+          if (victimsT.size() == 4) {
             clutchForSide = "T";
-            amountOfEnemies = victimCT;
-            clutcherName = kill.attackerName();
+            amountOfEnemies = victimsCT.size();
+            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsT);
           }
-          if (victimCT == 1) {
+          if (victimsCT.size() == 4) {
             clutchForSide = "CT";
-            amountOfEnemies = victimT;
-            clutcherName = kill.attackerName();
+            amountOfEnemies = victimsT.size();
+            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsCT);
           }
         }
       }
@@ -60,8 +64,10 @@ public class ClutchAnalyzer {
     return clutches;
   }
 
-  private String getLastPlayerName(String side, List<KillsEvent> kills) {
-    return null;
+  private String getLastPlayerName(String side, int round, List<String> victimNames) {
+    List<String> names = new ArrayList<>(gameDetails.getTeamForSide(side, round).namesOfPlayers());
+    names.removeAll(victimNames);
+    return names.get(0);
   }
 
   private boolean didTeamWinRound(RoundsEvent round, List<KillsEvent> killsEvent) {
