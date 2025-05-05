@@ -1,7 +1,8 @@
 package demoanalyzer.com.infrastructure;
 
 import demoanalyzer.com.domain.analyzer.AnalyzerService;
-import demoanalyzer.com.domain.analyzer.BasicDTO;
+import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
+import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ public class MainController {
   }
 
   @GetMapping("/info")
-  public BasicDTO getBasicReplayInfo() {
+  public GameDetailsDTO getBasicReplayInfo() {
     return analyzerService.getBasicReplayInfo();
   }
 
@@ -27,7 +28,9 @@ public class MainController {
   }
 
   @GetMapping("/clutch")
-  public void getClutchInfo() {}
+  public List<ClutchDTO> getClutchInfo() {
+    return analyzerService.getClutchInfo();
+  }
 
   @GetMapping("/trade")
   public void getTradeInfo() {}

@@ -1,7 +1,8 @@
 package demoanalyzer.com.domain.replay;
 
-import demoanalyzer.com.domain.analyzer.BasicDTO;
+import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
 import demoanalyzer.com.domain.analyzer.ReplayAdapter;
+import demoanalyzer.com.domain.replay.conversion.gameplay.GameInfo;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayEvent;
 import demoanalyzer.com.domain.replay.conversion.header.HeaderDeserializer;
@@ -19,12 +20,12 @@ public class ReplayService implements ReplayAdapter {
     gameplayDeserializer = new GameplayDeserializer();
   }
 
-  public BasicDTO getBasicReplayInfo() {
+  public GameInfo getBasicReplayInfo() {
     HeaderDeserializer headerDeserializer = new HeaderDeserializer();
     Optional<HeaderEvent> headerEventOptional = headerDeserializer.deserialize();
     String mapName = headerEventOptional.get().map_name();
     String serverName = headerEventOptional.get().server_name();
-    return new BasicDTO(mapName, serverName);
+    return new GameInfo(mapName, serverName);
   }
 
   @Override
