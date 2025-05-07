@@ -52,7 +52,7 @@ public class ClutchAnalyzer {
         }
       }
 
-      if (clutchForSide.equals(round.winner().toString())) {
+      if (clutchForSide.equalsIgnoreCase(round.winner().toString())) {
         clutches.add(new ClutchDTO(round.roundNum(), clutcherName, amountOfEnemies));
       }
     }
