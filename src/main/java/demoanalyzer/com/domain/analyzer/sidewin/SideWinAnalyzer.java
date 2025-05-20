@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SideWinAnalyzer {
 
-  public List<TeamSideWinsDTO> getAllTeamsSideWins(
+  public List<TeamSideWinsDTO> analyzeTeamsSideWins(
       GameDetailsDTO basicReplayInfo, List<RoundsEvent> roundsEvents) {
     List<TeamSideWinsDTO> teamSideWins = new ArrayList<>();
     List<Team> teams = List.of(basicReplayInfo.teamA(), basicReplayInfo.teamB());

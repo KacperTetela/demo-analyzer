@@ -6,6 +6,8 @@ import demoanalyzer.com.domain.analyzer.entry.EntryAnalyzer;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import demoanalyzer.com.domain.analyzer.sidewin.SideWinAnalyzer;
 import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWinsDTO;
+import demoanalyzer.com.domain.analyzer.trade.TradeAnalyzer;
+import demoanalyzer.com.domain.analyzer.trade.TradeDTO;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.RoundsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.TicksEvent;
@@ -21,12 +23,14 @@ public class DomainAnalyzerService {
   private final EntryAnalyzer entryAnalyzer;
   private final ClutchAnalyzer clutchAnalyzer;
   private final SideWinAnalyzer sideWinAnalyzer;
+  private final TradeAnalyzer tradeAnalyzer;
 
   public DomainAnalyzerService(ReplayAdapter replayAdapter) {
     this.replayAdapter = replayAdapter;
     this.entryAnalyzer = new EntryAnalyzer();
     this.clutchAnalyzer = new ClutchAnalyzer(getBasicReplayInfo());
     this.sideWinAnalyzer = new SideWinAnalyzer();
+    this.tradeAnalyzer = new TradeAnalyzer();
   }
 
   public GameDetailsDTO getBasicReplayInfo() {
@@ -70,8 +74,13 @@ public class DomainAnalyzerService {
     return clutchAnalyzer.analyzeClutch(killsEvents, roundsEvents);
   }
 
-  public List<TeamSideWinsDTO> getAllTeamsSideWins() {
+  public List<TeamSideWinsDTO> getSideWinsInfo() {
     List<RoundsEvent> roundsEvents = replayAdapter.getGameplayEvents(RoundsEvent.class);
-    return sideWinAnalyzer.getAllTeamsSideWins(getBasicReplayInfo(), roundsEvents);
+    return sideWinAnalyzer.analyzeTeamsSideWins(getBasicReplayInfo(), roundsEvents);
+  }
+
+  public List<TradeDTO> getTradeInfo() {
+    List<KillsEvent> killsEvents = replayAdapter.getGameplayEvents(KillsEvent.class);
+    return tradeAnalyzer.analyzeTrade(killsEvents);
   }
 }

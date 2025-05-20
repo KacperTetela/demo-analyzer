@@ -5,6 +5,7 @@ import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
 import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWinsDTO;
+import demoanalyzer.com.domain.analyzer.trade.TradeDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,12 +35,12 @@ public class MainController {
   }
 
   @GetMapping("/trade")
-  public String getTradeInfo() {
-    return "";
+  public List<TradeDTO> getTradeInfo() {
+    return domainAnalyzerService.getTradeInfo();
   }
 
   @GetMapping("/side-wins")
-  public List<TeamSideWinsDTO> getAllTeamsSideWins() {
-    return domainAnalyzerService.getAllTeamsSideWins();
+  public List<TeamSideWinsDTO> getSideWinsInfo() {
+    return domainAnalyzerService.getSideWinsInfo();
   }
 }
