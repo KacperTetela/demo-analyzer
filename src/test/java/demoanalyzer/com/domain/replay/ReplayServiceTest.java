@@ -1,20 +1,5 @@
 package demoanalyzer.com.domain.replay;
 
-import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
-import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.mockito.Spy;
-
-import java.lang.reflect.Field;
-
 import static org.mockito.ArgumentMatchers.any;
 
 /*
@@ -36,7 +21,7 @@ public class ReplayServiceTest {
         MockitoAnnotations.openMocks(this);
 
         // Wstrzyknięcie mockowanego GameplayDeserializer przez refleksję
-        Field field = ReplayService.class.getDeclaredField("gameplayDeserializer");
+        Field field = DomainReplayService.class.getDeclaredField("gameplayDeserializer");
         field.setAccessible(true);
         field.set(replayService, gameplayDeserializer);*//*
 
@@ -50,7 +35,7 @@ public class ReplayServiceTest {
         replayService.setTestHeaderEvent(headerEvent);
 
         // Act
-        GameDetailsDTO result = replayService.getBasicReplayInfo();
+        GameDetails result = replayService.getBasicReplayInfo();
 
         // Assert
         assertNotNull(result);
@@ -61,12 +46,12 @@ public class ReplayServiceTest {
     *//*
 */
 /**
-     * Rozszerzona klasa ReplayService dla celów testowych, pozwalająca
+     * Rozszerzona klasa DomainReplayService dla celów testowych, pozwalająca
      * kontrolować zwracane wyniki z HeaderDeserializer
      *//*
 */
 /*
-    private static class TestableReplayService extends ReplayService {
+    private static class TestableReplayService extends DomainReplayService {
         private HeaderEvent testHeaderEvent;
 
         public void setTestHeaderEvent(HeaderEvent testHeaderEvent) {
@@ -74,10 +59,10 @@ public class ReplayServiceTest {
         }
 
         @Override
-        public GameDetailsDTO getBasicReplayInfo() {
+        public GameDetails getBasicReplayInfo() {
             // Dla celów testowych, pomijamy rzeczywistą implementację HeaderDeserializer
             if (testHeaderEvent != null) {
-                return new GameDetailsDTO(testHeaderEvent.map_name(), testHeaderEvent.server_name());
+                return new GameDetails(testHeaderEvent.map_name(), testHeaderEvent.server_name());
             }
             return super.getBasicReplayInfo();
         }

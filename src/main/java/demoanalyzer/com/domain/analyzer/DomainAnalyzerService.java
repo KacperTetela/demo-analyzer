@@ -4,6 +4,8 @@ import demoanalyzer.com.domain.analyzer.clutch.ClutchAnalyzer;
 import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryAnalyzer;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
+import demoanalyzer.com.domain.analyzer.sidewin.SideWinAnalyzer;
+import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWinsDTO;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.RoundsEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.TicksEvent;
@@ -13,16 +15,18 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class AnalyzerService {
+public class DomainAnalyzerService {
 
   private ReplayAdapter replayAdapter;
   private final EntryAnalyzer entryAnalyzer;
   private final ClutchAnalyzer clutchAnalyzer;
+  private final SideWinAnalyzer sideWinAnalyzer;
 
-  public AnalyzerService(ReplayAdapter replayAdapter) {
+  public DomainAnalyzerService(ReplayAdapter replayAdapter) {
     this.replayAdapter = replayAdapter;
     this.entryAnalyzer = new EntryAnalyzer();
     this.clutchAnalyzer = new ClutchAnalyzer(getBasicReplayInfo());
+    this.sideWinAnalyzer = new SideWinAnalyzer();
   }
 
   public GameDetailsDTO getBasicReplayInfo() {
@@ -31,22 +35,25 @@ public class AnalyzerService {
             .sorted(Comparator.comparingLong(tickEvent -> tickEvent.tick()))
             .limit(10)
             .toList();
-    Team teamA = extractTeam("t", ticksEvents);
-    Team teamB = extractTeam("ct", ticksEvents);
-    return new GameDetailsDTO(
-        replayAdapter.getBasicReplayInfo().mapName(),
-        replayAdapter.getBasicReplayInfo().serverName(),
-        teamA,
-        teamB);
+    Team teamA = extractTeam("t", ticksEvents, "a");
+    Team teamB = extractTeam("ct", ticksEvents, "b");
+
+    GameDetailsDTO gameDetailsDTO =
+        new GameDetailsDTO(
+            replayAdapter.getBasicReplayInfo().mapName(),
+            replayAdapter.getBasicReplayInfo().serverName(),
+            teamA,
+            teamB);
+    return gameDetailsDTO;
   }
 
-  private Team extractTeam(String site, List<TicksEvent> ticksEvents) {
+  private Team extractTeam(String site, List<TicksEvent> ticksEvents, String teamName) {
     List<String> players =
         ticksEvents.stream()
             .filter(ticksEvent -> ticksEvent.side().equalsIgnoreCase(site))
             .map(TicksEvent::name)
             .toList();
-    return new Team(site.toUpperCase(), players);
+    return new Team(site.toUpperCase(), players, teamName);
   }
 
   public List<EntryDTO> getEntryInfo() {
@@ -63,5 +70,8 @@ public class AnalyzerService {
     return clutchAnalyzer.analyzeClutch(killsEvents, roundsEvents);
   }
 
-  public void getInformationAboutSquads() {}
+  public List<TeamSideWinsDTO> getAllTeamsSideWins() {
+    List<RoundsEvent> roundsEvents = replayAdapter.getGameplayEvents(RoundsEvent.class);
+    return sideWinAnalyzer.getAllTeamsSideWins(getBasicReplayInfo(), roundsEvents);
+  }
 }

@@ -1,6 +1,5 @@
 package demoanalyzer.com.domain.replay;
 
-import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
 import demoanalyzer.com.domain.analyzer.ReplayAdapter;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameInfo;
 import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
@@ -13,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ReplayService implements ReplayAdapter {
+public class DomainReplayService implements ReplayAdapter {
   private final GameplayDeserializer gameplayDeserializer;
 
-  public ReplayService() {
+  public DomainReplayService() {
     gameplayDeserializer = new GameplayDeserializer();
   }
 

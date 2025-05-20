@@ -8,10 +8,10 @@ import java.util.*;
 
 public class ClutchAnalyzer {
 
-  private final GameDetailsDTO gameDetails;
+  private final GameDetailsDTO gameDetailsDTO;
 
   public ClutchAnalyzer(GameDetailsDTO gameDetails) {
-    this.gameDetails = gameDetails;
+    this.gameDetailsDTO = gameDetails;
   }
 
   public List<ClutchDTO> analyzeClutch(
@@ -65,7 +65,7 @@ public class ClutchAnalyzer {
   }
 
   private String getLastPlayerName(String side, int round, List<String> victimNames) {
-    List<String> names = new ArrayList<>(gameDetails.getTeamForSide(side, round).namesOfPlayers());
+    List<String> names = new ArrayList<>(gameDetailsDTO.getTeamForSide(side, round).namesOfPlayers());
     names.removeAll(victimNames);
     return names.get(0);
   }

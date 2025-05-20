@@ -1,12 +1,9 @@
 package demoanalyzer.com.domain;
 
-import demoanalyzer.com.domain.replay.ReplayService;
+import demoanalyzer.com.domain.replay.DomainReplayService;
 import demoanalyzer.com.domain.replay.conversion.gameplay.DamagesEvent;
-import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayDeserializer;
-import demoanalyzer.com.domain.replay.conversion.gameplay.GameplayEvent;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -14,11 +11,11 @@ public class Main {
     /*    ParserHandler parserHandler = new ParserHandler();
     System.out.println(parserHandler.parse());*/
 
-    ReplayService replayService = new ReplayService();
+    DomainReplayService domainReplayService = new DomainReplayService();
 
     // Pobierz tylko konkretny typ zdarzeń
-    List<DamagesEvent> damages = replayService.getGameplayEvents(DamagesEvent.class);
-    List<KillsEvent> kills = replayService.getGameplayEvents(KillsEvent.class);
+    List<DamagesEvent> damages = domainReplayService.getGameplayEvents(DamagesEvent.class);
+    List<KillsEvent> kills = domainReplayService.getGameplayEvents(KillsEvent.class);
 
     damages.forEach(System.out::println);
   }
