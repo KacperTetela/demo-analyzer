@@ -4,7 +4,7 @@ import demoanalyzer.com.domain.analyzer.DomainAnalyzerService;
 import demoanalyzer.com.domain.analyzer.GameDetailsDTO;
 import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
-import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWinsDTO;
+import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWins;
 import demoanalyzer.com.domain.analyzer.trade.TradeDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +40,7 @@ public class MainController {
   }
 
   @GetMapping("/side-wins")
-  public List<TeamSideWinsDTO> getSideWinsInfo() {
+  public List<TeamSideWins> getSideWinsInfo() {
     return domainAnalyzerService.getSideWinsInfo();
   }
 }

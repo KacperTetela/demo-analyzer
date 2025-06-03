@@ -10,11 +10,34 @@ public class TradeAnalyzer {
     List<TradeDTO> trades = new ArrayList<>();
 
     for (int i = 0; i < killsEvents.size() - 1; i++) {
-      KillsEvent currentKill = killsEvents.get(i);
-      KillsEvent tradeKill = killsEvents.get(i + 1);
+      KillsEvent firstKill = killsEvents.get(i);
+      TradeType tradeType = TradeType.LATE_TRADE;
 
-      if (tradeKill.tick() - currentKill.tick() <= 640) {
-        trades.add(new TradeDTO(currentKill, tradeKill));
+      for (int j = i + 1; j < killsEvents.size(); j++) {
+        KillsEvent potentialTrade = killsEvents.get(j);
+
+        // Jeżeli poza limitem czasu — przerwij pętlę
+        if (potentialTrade.tick() - firstKill.tick() > TradeType.LATE_TICK_LIMIT) {
+          break;
+        }
+
+        // Czy zabójca drugiego fraga zabił zabójcę pierwszego?
+        if (potentialTrade.victimName().equals(firstKill.attackerName())) {
+
+          if (!(potentialTrade.attackerSide() == null || firstKill.attackerSide() == null))
+
+            // Czy ofiara pierwszego fraga i zabójca drugiego są po tej samej stronie
+            if (potentialTrade.attackerSide().equalsIgnoreCase(firstKill.victimSide())) {
+
+              // To jest trade frag! Czy Jest Instant
+              if (potentialTrade.tick() - firstKill.tick() > TradeType.INSTANT_TRADE_TICK_LIMIT) {
+                tradeType = TradeType.INSTANT_TRADE;
+              }
+
+              trades.add(new TradeDTO(firstKill, potentialTrade, tradeType));
+              break; // zakładamy tylko 1 trade per frag
+            }
+        }
       }
     }
 

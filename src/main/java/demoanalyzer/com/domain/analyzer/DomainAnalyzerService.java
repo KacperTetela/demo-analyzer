@@ -5,7 +5,7 @@ import demoanalyzer.com.domain.analyzer.clutch.ClutchDTO;
 import demoanalyzer.com.domain.analyzer.entry.EntryAnalyzer;
 import demoanalyzer.com.domain.analyzer.entry.EntryDTO;
 import demoanalyzer.com.domain.analyzer.sidewin.SideWinAnalyzer;
-import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWinsDTO;
+import demoanalyzer.com.domain.analyzer.sidewin.TeamSideWins;
 import demoanalyzer.com.domain.analyzer.trade.TradeAnalyzer;
 import demoanalyzer.com.domain.analyzer.trade.TradeDTO;
 import demoanalyzer.com.domain.replay.conversion.gameplay.KillsEvent;
@@ -74,7 +74,7 @@ public class DomainAnalyzerService {
     return clutchAnalyzer.analyzeClutch(killsEvents, roundsEvents);
   }
 
-  public List<TeamSideWinsDTO> getSideWinsInfo() {
+  public List<TeamSideWins> getSideWinsInfo() {
     List<RoundsEvent> roundsEvents = replayAdapter.getGameplayEvents(RoundsEvent.class);
     return sideWinAnalyzer.analyzeTeamsSideWins(getBasicReplayInfo(), roundsEvents);
   }

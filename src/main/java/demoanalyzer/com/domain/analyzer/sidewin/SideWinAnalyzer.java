@@ -9,14 +9,14 @@ import java.util.List;
 
 public class SideWinAnalyzer {
 
-  public List<TeamSideWinsDTO> analyzeTeamsSideWins(
+  public List<TeamSideWins> analyzeTeamsSideWins(
       GameDetailsDTO basicReplayInfo, List<RoundsEvent> roundsEvents) {
-    List<TeamSideWinsDTO> teamSideWins = new ArrayList<>();
+    List<TeamSideWins> teamSideWins = new ArrayList<>();
     List<Team> teams = List.of(basicReplayInfo.teamA(), basicReplayInfo.teamB());
     for (Team team : teams) {
       int teamWinsT = getTeamWins(roundsEvents, basicReplayInfo, team, "t");
       int teamWinsCt = getTeamWins(roundsEvents, basicReplayInfo, team, "ct");
-      teamSideWins.add(new TeamSideWinsDTO(team.name(), teamWinsT, teamWinsCt));
+      teamSideWins.add(new TeamSideWins(team.name(), teamWinsT, teamWinsCt));
     }
     return teamSideWins;
   }
