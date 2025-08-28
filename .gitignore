@@ -13,6 +13,7 @@ target/
 .springBeans
 .sts4-cache
 
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -33,3 +34,6 @@ build/
 .vscode/
 /src/main/resources/dem/*
 /src/main/resources/analyzed/*
+
+### Konfiguracja ###
+.env

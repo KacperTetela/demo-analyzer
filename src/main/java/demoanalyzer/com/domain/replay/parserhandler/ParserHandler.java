@@ -6,7 +6,8 @@ import java.io.InputStreamReader;
 
 public class ParserHandler {
 
-  public boolean parse() {
+  public boolean parse(String filePath) {
+    System.out.println("test");
     try {
       // Full path to Python in the .venv virtual environment
       String pythonPath = "src\\main\\resources\\awpy\\.venv\\Scripts\\python.exe";
@@ -14,7 +15,7 @@ public class ParserHandler {
       String pythonScriptPath = "src\\main\\resources\\awpy\\Info.py";
 
       // We create a process to run Python
-      ProcessBuilder pb = new ProcessBuilder(pythonPath, pythonScriptPath);
+      ProcessBuilder pb = new ProcessBuilder(pythonPath, pythonScriptPath,filePath);
       pb.redirectErrorStream(true); // Łączenie strumieni wyjścia i błędów
       Process process = pb.start();
 

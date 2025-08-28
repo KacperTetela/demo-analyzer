@@ -20,15 +20,15 @@ import java.util.List;
 public class DomainAnalyzerService {
 
   private ReplayAdapter replayAdapter;
-  private final EntryAnalyzer entryAnalyzer;
-  private final ClutchAnalyzer clutchAnalyzer;
-  private final SideWinAnalyzer sideWinAnalyzer;
-  private final TradeAnalyzer tradeAnalyzer;
+  private EntryAnalyzer entryAnalyzer;
+  private ClutchAnalyzer clutchAnalyzer;
+  private SideWinAnalyzer sideWinAnalyzer;
+  private TradeAnalyzer tradeAnalyzer;
 
   public DomainAnalyzerService(ReplayAdapter replayAdapter) {
     this.replayAdapter = replayAdapter;
     this.entryAnalyzer = new EntryAnalyzer();
-    this.clutchAnalyzer = new ClutchAnalyzer(getBasicReplayInfo());
+    this.clutchAnalyzer = new ClutchAnalyzer();
     this.sideWinAnalyzer = new SideWinAnalyzer();
     this.tradeAnalyzer = new TradeAnalyzer();
   }
@@ -71,7 +71,7 @@ public class DomainAnalyzerService {
     List<KillsEvent> killsEvents = replayAdapter.getGameplayEvents(KillsEvent.class);
     List<RoundsEvent> roundsEvents = replayAdapter.getGameplayEvents(RoundsEvent.class);
 
-    return clutchAnalyzer.analyzeClutch(killsEvents, roundsEvents);
+    return clutchAnalyzer.analyzeClutch(killsEvents, roundsEvents,getBasicReplayInfo());
   }
 
   public List<TeamSideWins> getSideWinsInfo() {

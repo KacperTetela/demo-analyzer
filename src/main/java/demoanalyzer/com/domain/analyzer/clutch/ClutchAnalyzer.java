@@ -8,14 +8,10 @@ import java.util.*;
 
 public class ClutchAnalyzer {
 
-  private final GameDetailsDTO gameDetailsDTO;
-
-  public ClutchAnalyzer(GameDetailsDTO gameDetails) {
-    this.gameDetailsDTO = gameDetails;
-  }
 
   public List<ClutchDTO> analyzeClutch(
-      List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents) {
+      List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents,GameDetailsDTO gameDetails
+  ) {
 
     // Inicjalizacja listy wynikowej
     List<ClutchDTO> clutches = new ArrayList<>();
@@ -42,12 +38,12 @@ public class ClutchAnalyzer {
           if (victimsT.size() == 4) {
             clutchForSide = "T";
             amountOfEnemies = victimsCT.size();
-            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsT);
+            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsT, gameDetails);
           }
           if (victimsCT.size() == 4) {
             clutchForSide = "CT";
             amountOfEnemies = victimsT.size();
-            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsCT);
+            clutcherName = getLastPlayerName(clutchForSide, round.roundNum(), victimsCT, gameDetails);
           }
         }
       }
@@ -64,8 +60,8 @@ public class ClutchAnalyzer {
     return clutches;
   }
 
-  private String getLastPlayerName(String side, int round, List<String> victimNames) {
-    List<String> names = new ArrayList<>(gameDetailsDTO.getTeamForSide(side, round).namesOfPlayers());
+  private String getLastPlayerName(String side, int round, List<String> victimNames,GameDetailsDTO gameDetails) {
+    List<String> names = new ArrayList<>(gameDetails.getTeamForSide(side, round).namesOfPlayers());
     names.removeAll(victimNames);
     return names.get(0);
   }
