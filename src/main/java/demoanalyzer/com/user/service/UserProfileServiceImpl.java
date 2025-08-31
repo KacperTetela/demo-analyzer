@@ -1,21 +1,26 @@
 package demoanalyzer.com.user.service;
 
-import demoanalyzer.com.domain.user.User;
-import demoanalyzer.com.domain.user.UserProfileService;
-import demoanalyzer.com.exception.BadCredentialsException;
-import demoanalyzer.com.exception.UserNotFoundException;
+import demoanalyzer.com.user.domain.User;
+import demoanalyzer.com.user.domain.UserProfileService;
+import demoanalyzer.com.user.exception.BadCredentialsException;
+import demoanalyzer.com.user.exception.UserNotFoundException;
 import demoanalyzer.com.user.model.ChangePasswordRequestDto;
 import demoanalyzer.com.user.model.UserRequestDto;
 import demoanalyzer.com.user.model.UserResponseDto;
-import demoanalyzer.com.user.repository.UserEntity;
-import demoanalyzer.com.user.repository.UserRepository;
+import demoanalyzer.com.user.infrastructure.persistence.UserEntity;
+import demoanalyzer.com.user.infrastructure.persistence.UserRepositoryJpaImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserProfileServiceImpl implements UserProfileService {
 
-  private final UserRepository userRepository;
+  private final UserRepositoryJpaImpl userRepositoryJpaImpl;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserProfileServiceImpl(UserRepository userRepository) {
-    this.userRepository = userRepository;
+  public UserProfileServiceImpl(UserRepositoryJpaImpl userRepositoryJpaImpl, PasswordEncoder passwordEncoder) {
+    this.userRepositoryJpaImpl = userRepositoryJpaImpl;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public UserResponseDto updateProfile(String userId, UserRequestDto userRequest) {
@@ -28,15 +33,22 @@ public class UserProfileServiceImpl implements UserProfileService {
   @Override
   public User updateProfileUser(String userId, User updatedUser) {
     UserEntity userEntity =
-        userRepository
+        userRepositoryJpaImpl
             .findById(Long.valueOf(userId))
             .orElseThrow(
                 () -> new UserNotFoundException("Nie znaleziono użytkownika o podanym ID."));
 
-    userEntity.setUsername(updatedUser.username());
-    userEntity.setPassword(updatedUser.password()); // W prawdziwej aplikacji hasłowanie!
+    // Aktualizuj nazwę użytkownika, jeśli podano
+    if (updatedUser.username() != null && !updatedUser.username().isBlank()) {
+      userEntity.setUsername(updatedUser.username());
+    }
 
-    UserEntity savedEntity = userRepository.save(userEntity);
+    // Aktualizuj hasło, jeśli podano, pamiętając o hashowaniu
+    if (updatedUser.password() != null && !updatedUser.password().isBlank()) {
+      userEntity.setPassword(passwordEncoder.encode(updatedUser.password()));
+    }
+
+    UserEntity savedEntity = userRepositoryJpaImpl.save(userEntity);
     return new User(savedEntity.getId(), savedEntity.getUsername(), savedEntity.getPassword());
   }
 
@@ -48,17 +60,18 @@ public class UserProfileServiceImpl implements UserProfileService {
   @Override
   public void changePasswordUser(String userId, String oldPassword, String newPassword) {
     UserEntity userEntity =
-        userRepository
+        userRepositoryJpaImpl
             .findById(Long.valueOf(userId))
             .orElseThrow(
                 () -> new UserNotFoundException("Nie znaleziono użytkownika o podanym ID."));
 
-    if (!userEntity.getPassword().equals(oldPassword)) { // Pamiętaj o hashowaniu
+    // Weryfikacja starego hasła z wykorzystaniem PasswordEncoder
+    if (!passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
       throw new BadCredentialsException();
     }
 
     userEntity.setPassword(newPassword); // W prawdziwej aplikacji haszowanie nowego hasła!
-    userRepository.save(userEntity);
+    userRepositoryJpaImpl.save(userEntity);
   }
 
   public void deleteAccount(String userId) {
@@ -67,9 +80,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 
   @Override
   public void deleteAccountUser(String userId) {
-    if (!userRepository.existsById(Long.valueOf(userId))) {
+    if (!userRepositoryJpaImpl.existsById(Long.valueOf(userId))) {
       throw new UserNotFoundException("Nie znaleziono użytkownika o podanym ID.");
     }
-    userRepository.deleteById(Long.valueOf(userId));
+    userRepositoryJpaImpl.deleteById(Long.valueOf(userId));
   }
 }

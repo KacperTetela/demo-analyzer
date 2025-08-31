@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Service
 public class TokenService {
 
   @Value("${jwt.secret}")
@@ -21,6 +22,12 @@ public class TokenService {
   private long jwtExpiration;
 
   private Key key;
+
+  private final TokenBlacklistService tokenBlacklistService;
+
+  public TokenService(TokenBlacklistService tokenBlacklistService) {
+    this.tokenBlacklistService = tokenBlacklistService;
+  }
 
   @PostConstruct
   public void init() {
@@ -41,16 +48,20 @@ public class TokenService {
 
   public Long getUserIdFromToken(String token) {
     Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-
     return Long.valueOf(claims.getSubject());
   }
 
   public boolean validateToken(String authToken) {
+    // Sprawdź, czy token jest na czarnej liście
+    if (tokenBlacklistService.isBlacklisted(authToken)) {
+      return false;
+    }
+
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
       return true;
     } catch (Exception e) {
-      // Logowanie wyjątku (np. token jest nieważny)
+      // Logowanie wyjątku (np. token jest nieważny, wygasły)
       return false;
     }
   }

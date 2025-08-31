@@ -1,23 +1,27 @@
 package demoanalyzer.com.user.service;
 
-import demoanalyzer.com.domain.user.AuthenticationService;
-import demoanalyzer.com.domain.user.User;
-import demoanalyzer.com.exception.BadCredentialsException;
-import demoanalyzer.com.exception.UsernameAlreadyExistsException;
+import demoanalyzer.com.user.domain.AuthenticationService;
+import demoanalyzer.com.user.domain.User;
+import demoanalyzer.com.user.domain.UserRepository;
+import demoanalyzer.com.user.exception.BadCredentialsException;
+import demoanalyzer.com.user.exception.UsernameAlreadyExistsException;
+import demoanalyzer.com.security.TokenService;
+import demoanalyzer.com.user.model.TokenResponseDto;
 import demoanalyzer.com.user.model.UserRequestDto;
 import demoanalyzer.com.user.model.UserResponseDto;
-import demoanalyzer.com.user.repository.UserEntity;
-import demoanalyzer.com.user.repository.UserRepository;
+import demoanalyzer.com.user.infrastructure.persistence.UserEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
   private final UserRepository userRepository;
+  private final TokenService tokenService;
+  private final PasswordEncoder passwordEncoder;
 
-  public AuthenticationServiceImpl(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
 
   public UserResponseDto register(UserRequestDto userRequest) {
     User user = convertToUser(userRequest);
@@ -30,15 +34,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     if (userRepository.findByUsername(user.username()).isPresent()) {
       throw new UsernameAlreadyExistsException();
     }
-    UserEntity userEntity = new UserEntity(user.username(), user.password());
+    String encodedPassword = passwordEncoder.encode(user.password()); // Hashowanie
+    UserEntity userEntity = new UserEntity(user.username(), encodedPassword);
     UserEntity savedEntity = userRepository.save(userEntity);
     return new User(savedEntity.getId(), savedEntity.getUsername(), savedEntity.getPassword());
   }
 
-  public UserResponseDto login(UserRequestDto userRequest) {
+  public TokenResponseDto login(UserRequestDto userRequest) {
     User user = loginUser(userRequest.username(), userRequest.password());
-    // Tutaj w prawdziwej aplikacji wygenerowałbyś token JWT
-    return new UserResponseDto(user.id(), user.username());
+    String token = tokenService.generateToken(user.id());
+    return new TokenResponseDto(token);
   }
 
   @Override
@@ -46,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     UserEntity userEntity =
         userRepository.findByUsername(username).orElseThrow(BadCredentialsException::new);
 
-    if (!userEntity.getPassword().equals(password)) {
+    if (!passwordEncoder.matches(password, userEntity.getPassword())) { // Porównanie
       throw new BadCredentialsException();
     }
     return new User(userEntity.getId(), userEntity.getUsername(), userEntity.getPassword());
@@ -54,7 +59,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public void logoutUser(String accessToken) {
-    // W prawdziwej aplikacji obsłużyłbyś unieważnienie tokenu
+    // W tej prostej wersji, nie robimy nic
+    // W pełnej wersji: tokenBlacklistService.blacklistToken(accessToken);
   }
 
   private User convertToUser(UserRequestDto userRequest) {
