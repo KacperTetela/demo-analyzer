@@ -1,5 +1,6 @@
 package demoanalyzer.com.user.infrastructure.persistence;
 
+import demoanalyzer.com.user.domain.User;
 import demoanalyzer.com.user.domain.UserRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -7,11 +8,24 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepositoryJpaImpl extends JpaRepository<UserEntity, Long>, UserRepository {
+public abstract class UserRepositoryJpaImpl
+    implements JpaRepository<UserEntity, Long>, UserRepository {
+
+  abstract UserEntity findByUsername(String username);
+
+  abstract boolean existsByUsername(String username);
 
   @Override
-  Optional<UserEntity> findByUsername(String username);
+  public Optional<User> findByUsernamePort(String username) {
+    return Optional.ofNullable(findByUsername(username)).map(this::toUser);
+  }
 
   @Override
-  boolean existsByUsername(String username);
+  public boolean existsByUsernamePort(String username) {
+    return existsByUsername(username);
+  }
+
+  private User toUser(UserEntity userEntity) {
+    return new User(userEntity.getId(), userEntity.getUsername(), userEntity.getPassword());
+  }
 }

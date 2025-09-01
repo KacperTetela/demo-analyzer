@@ -31,7 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public User registerUser(User user) {
-    if (userRepository.findByUsername(user.username()).isPresent()) {
+    if (userRepository.findByUsernamePort(user.username()).isPresent()) {
       throw new UsernameAlreadyExistsException();
     }
     String encodedPassword = passwordEncoder.encode(user.password()); // Hashowanie
@@ -49,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   @Override
   public User loginUser(String username, String password) {
     UserEntity userEntity =
-        userRepository.findByUsername(username).orElseThrow(BadCredentialsException::new);
+        userRepository.findByUsernamePort(username).orElseThrow(BadCredentialsException::new);
 
     if (!passwordEncoder.matches(password, userEntity.getPassword())) { // Porównanie
       throw new BadCredentialsException();
