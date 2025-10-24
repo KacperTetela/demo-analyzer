@@ -1,6 +1,6 @@
 package demoanalyzer.com.user.auth.persistence;
 
-import demoanalyzer.com.user.auth.domain.model.User;
+import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class AuthUserEntity {
 
   @NonNull private String password;
 
-  static AuthUserEntity from(User user) {
-    return new AuthUserEntity(user.id(), user.email(), user.password());
+  static AuthUserEntity from(AuthUser authUser) {
+    return new AuthUserEntity(authUser.id(), authUser.email(), authUser.password());
   }
 }

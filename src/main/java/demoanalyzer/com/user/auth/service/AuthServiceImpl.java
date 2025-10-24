@@ -1,6 +1,6 @@
 package demoanalyzer.com.user.auth.service;
 
-import demoanalyzer.com.user.auth.domain.model.User;
+import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import demoanalyzer.com.user.auth.exception.BadCredentialsException;
 import demoanalyzer.com.user.auth.exception.UserNotFoundException;
@@ -24,14 +24,14 @@ public class AuthServiceImpl implements AuthService {
   }
 
   public UserResponseDto updateProfile(String userId, UserRequestDto userRequest) {
-    User updatedUser =
+    AuthUser updatedUser =
         updateProfileUser(
-            userId, new User(Long.valueOf(userId), userRequest.username(), userRequest.password()));
+            userId, new AuthUser(Long.valueOf(userId), userRequest.username(), userRequest.password()));
     return UserResponseDto.from(updatedUser);
   }
 
   @Override
-  public User updateProfileUser(String userId, User updatedUser) {
+  public AuthUser updateProfileUser(String userId, AuthUser updatedUser) {
     AuthUserEntity authUserEntity =
         userRepositoryJpaImpl
             .findById(Long.valueOf(userId))
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     AuthUserEntity savedEntity = userRepositoryJpaImpl.save(authUserEntity);
-    return new User(savedEntity.getId(), savedEntity.getEmail(), savedEntity.getPassword());
+    return new AuthUser(savedEntity.getId(), savedEntity.getEmail(), savedEntity.getPassword());
   }
 
   public void changePassword(String userId, ChangePasswordRequestDto changePasswordRequest) {
@@ -58,12 +58,12 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public User registerUser(User user) {
+  public AuthUser registerUser(AuthUser user) {
     return null;
   }
 
   @Override
-  public User loginUser(String email, String password) {
+  public AuthUser loginUser(String email, String password) {
     return null;
   }
 
