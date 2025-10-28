@@ -9,4 +9,6 @@ public interface AuthRepository {
   Optional<AuthUser> findUser(String email);
 
   boolean existsUser(String email);
+
+  AuthUser saveUser(AuthUser authUser);
 }

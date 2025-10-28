@@ -21,7 +21,12 @@ public class AuthUserEntity {
 
   @NonNull private String password;
 
-  static AuthUserEntity from(AuthUser authUser) {
-    return new AuthUserEntity(authUser.id(), authUser.email(), authUser.password());
+  public static AuthUserEntity from(AuthUser authUser) {
+    return new AuthUserEntity(authUser.email(), authUser.password());
+  }
+
+  public static AuthUser from(AuthUserEntity authUserEntity) {
+    return new AuthUser(
+        authUserEntity.getId(), authUserEntity.getEmail(), authUserEntity.getPassword());
   }
 }

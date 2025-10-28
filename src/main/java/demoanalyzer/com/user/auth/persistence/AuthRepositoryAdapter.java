@@ -24,4 +24,9 @@ public class AuthRepositoryAdapter implements AuthRepository {
   public boolean existsUser(String email) {
     return existsUser(email);
   }
+
+  @Override
+  public AuthUser saveUser(AuthUser authUser) {
+    return AuthUserEntity.from(authJpaRepository.save(AuthUserEntity.from(authUser)));
+  }
 }
