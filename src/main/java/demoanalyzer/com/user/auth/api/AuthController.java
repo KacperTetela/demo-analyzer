@@ -50,7 +50,7 @@ public class AuthController {
 
   @DeleteMapping("/delete")
   public ResponseEntity<OperationResult> deleteAccountUser(
-      @RequestBody DeleteAccountCommand command) {
+      @RequestBody AuthRequestCommand command) {
     OperationResult result = authService.deleteAccountUser(command);
     return ResponseEntity.ok(result);
   }

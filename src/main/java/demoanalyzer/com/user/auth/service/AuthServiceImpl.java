@@ -3,13 +3,14 @@ package demoanalyzer.com.user.auth.service;
 import demoanalyzer.com.user.auth.domain.command.AuthRequestCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
-import demoanalyzer.com.user.auth.domain.command.DeleteAccountCommand;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import demoanalyzer.com.user.auth.exception.BadCredentialsException;
+import demoanalyzer.com.user.auth.exception.UserNotFoundException;
 import demoanalyzer.com.user.auth.exception.UsernameAlreadyExistsException;
+import demoanalyzer.com.user.auth.persistence.AuthUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,11 +56,25 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public OperationResult changePasswordUser(ChangePasswordCommand command) {
-    return null;
+    AuthUserEntity authUserEntity =
+        repository
+            .findUser(Long.valueOf(command.userId()))
+            .orElseThrow(() -> new UserNotFoundException());
+
+    // Weryfikacja starego hasła z wykorzystaniem PasswordEncoder
+    if (!passwordEncoder.matches(oldPassword, authUserEntity.getPassword())) {
+      throw new BadCredentialsException();
+    }
+      return null;
   }
 
   @Override
-  public OperationResult deleteAccountUser(DeleteAccountCommand command) {
-    return null;
+  public OperationResult deleteAccountUser(AuthRequestCommand command) {
+    OperationResult loginResult = loginUser(command);
+    if (!loginResult.success()) return new OperationResult(false, "User cannot been verified");
+    AuthUser authUser =
+        repository.findUser(command.email()).orElseThrow(BadCredentialsException::new);
+    repository.deleteUser(authUser.id());
+    return new OperationResult(true, "Account has been deleted");
   }
 }

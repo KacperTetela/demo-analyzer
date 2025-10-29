@@ -21,6 +21,11 @@ public class AuthRepositoryAdapter implements AuthRepository {
   }
 
   @Override
+  public Optional<AuthUser> findUser(Long id) {
+    return authJpaRepository.findById(id);
+  }
+
+  @Override
   public boolean existsUser(String email) {
     return existsUser(email);
   }
@@ -28,5 +33,10 @@ public class AuthRepositoryAdapter implements AuthRepository {
   @Override
   public AuthUser saveUser(AuthUser authUser) {
     return AuthUserEntity.from(authJpaRepository.save(AuthUserEntity.from(authUser)));
+  }
+
+  @Override
+  public void deleteUser(Long id) {
+    authJpaRepository.deleteById(id);
   }
 }

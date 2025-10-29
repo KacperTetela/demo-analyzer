@@ -3,7 +3,6 @@ package demoanalyzer.com.user.auth.domain.service;
 import demoanalyzer.com.user.auth.domain.command.AuthRequestCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
-import demoanalyzer.com.user.auth.domain.command.DeleteAccountCommand;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 
 public interface AuthService {
@@ -18,5 +17,5 @@ public interface AuthService {
 
   OperationResult changePasswordUser(ChangePasswordCommand command);
 
-  OperationResult deleteAccountUser(DeleteAccountCommand command);
+  OperationResult deleteAccountUser(AuthRequestCommand command);
 }

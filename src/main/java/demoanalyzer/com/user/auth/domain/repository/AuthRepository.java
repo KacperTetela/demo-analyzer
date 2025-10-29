@@ -8,7 +8,11 @@ public interface AuthRepository {
 
   Optional<AuthUser> findUser(String email);
 
+  Optional<AuthUser> findUser(Long id);
+
   boolean existsUser(String email);
 
   AuthUser saveUser(AuthUser authUser);
+
+  void deleteUser(Long id);
 }
