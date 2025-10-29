@@ -22,7 +22,7 @@ public class AuthRepositoryAdapter implements AuthRepository {
 
   @Override
   public Optional<AuthUser> findUser(Long id) {
-    return authJpaRepository.findById(id);
+    return authJpaRepository.findById(id).map(AuthUserEntity::from);
   }
 
   @Override
@@ -38,5 +38,15 @@ public class AuthRepositoryAdapter implements AuthRepository {
   @Override
   public void deleteUser(Long id) {
     authJpaRepository.deleteById(id);
+  }
+
+  @Override
+  public void updatePasswordById(Long id, String newPassword) {
+    authJpaRepository.updatePasswordById(id, newPassword);
+  }
+
+  @Override
+  public void updateEmailById(Long id, String newEmail) {
+    authJpaRepository.updateEmailById(id, newEmail);
   }
 }

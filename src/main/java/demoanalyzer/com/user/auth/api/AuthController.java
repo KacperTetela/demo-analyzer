@@ -3,7 +3,6 @@ package demoanalyzer.com.user.auth.api;
 import demoanalyzer.com.user.auth.domain.command.AuthRequestCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
-import demoanalyzer.com.user.auth.domain.command.DeleteAccountCommand;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import lombok.RequiredArgsConstructor;

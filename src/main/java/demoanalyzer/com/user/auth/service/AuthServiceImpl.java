@@ -8,9 +8,7 @@ import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import demoanalyzer.com.user.auth.exception.BadCredentialsException;
-import demoanalyzer.com.user.auth.exception.UserNotFoundException;
 import demoanalyzer.com.user.auth.exception.UsernameAlreadyExistsException;
-import demoanalyzer.com.user.auth.persistence.AuthUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,45 +34,41 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public OperationResult loginUser(AuthRequestCommand command) {
-    AuthUser authUser =
-        repository
-            .findUser(command.email())
-            .filter(user -> passwordEncoder.matches(command.password(), user.password()))
-            .orElseThrow(BadCredentialsException::new);
+    AuthUser authUser = authenticate(command.email(), command.password());
     return new OperationResult(true, "You are logged in");
   }
 
   @Override
   public OperationResult logoutUser(String accessToken) {
-    return null;
+    return new OperationResult(false, "No implementation of module");
   }
 
   @Override
   public OperationResult changeUserEmail(ChangeEmailCommand command) {
-    return null;
+    AuthUser authUser = authenticate(command.email(), command.password());
+    repository.updateEmailById(authUser.id(), command.newEmail());
+    return new OperationResult(true, "Email has been updated");
   }
 
   @Override
   public OperationResult changePasswordUser(ChangePasswordCommand command) {
-    AuthUserEntity authUserEntity =
-        repository
-            .findUser(Long.valueOf(command.userId()))
-            .orElseThrow(() -> new UserNotFoundException());
-
-    // Weryfikacja starego hasła z wykorzystaniem PasswordEncoder
-    if (!passwordEncoder.matches(oldPassword, authUserEntity.getPassword())) {
-      throw new BadCredentialsException();
-    }
-      return null;
+    AuthUser authUser = authenticate(command.email(), command.oldPassword());
+    String encodedPassword = passwordEncoder.encode(command.newPassword());
+    repository.updatePasswordById(authUser.id(), encodedPassword);
+    return new OperationResult(true, "Password has been updated");
   }
 
   @Override
   public OperationResult deleteAccountUser(AuthRequestCommand command) {
-    OperationResult loginResult = loginUser(command);
-    if (!loginResult.success()) return new OperationResult(false, "User cannot been verified");
-    AuthUser authUser =
-        repository.findUser(command.email()).orElseThrow(BadCredentialsException::new);
+    AuthUser authUser = authenticate(command.email(), command.password());
     repository.deleteUser(authUser.id());
     return new OperationResult(true, "Account has been deleted");
+  }
+
+  private AuthUser authenticate(String email, String password) {
+    return repository
+        .findUser(email)
+        .filter(user -> passwordEncoder.matches(password, user.password()))
+        .orElseThrow(BadCredentialsException::new);
   }
 }

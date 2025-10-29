@@ -1,3 +1,3 @@
 package demoanalyzer.com.user.auth.domain.command;
 
-public record ChangeEmailCommand(Long userId, String oldEmail, String newEmail) {}
+public record ChangeEmailCommand(String email, String password, String newEmail) {}
