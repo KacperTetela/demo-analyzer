@@ -1,6 +1,6 @@
 package demoanalyzer.com.user.auth.service;
 
-import demoanalyzer.com.user.auth.domain.command.AuthRequestCommand;
+import demoanalyzer.com.user.auth.domain.command.AuthCommand;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
@@ -31,7 +31,7 @@ class AuthServiceImplTest {
   @Test
   void registerUser() {
     // given
-    AuthRequestCommand command = new AuthRequestCommand("test@example.com", "password123");
+    AuthCommand command = new AuthCommand("test@example.com", "password123");
     AuthUser savedUser = new AuthUser(1L, command.email(), "encodedPassword");
 
     when(repository.findUser(command.email())).thenReturn(Optional.empty());
@@ -41,7 +41,7 @@ class AuthServiceImplTest {
     // loginUser będzie wywołane z prawidłowymi danymi, więc symulujemy sukces
     doReturn(new OperationResult(true, "OK"))
         .when(service)
-        .loginUser(any(AuthRequestCommand.class));
+        .loginUser(any(AuthCommand.class));
 
     // when
     OperationResult result = service.registerUser(command);
@@ -51,6 +51,6 @@ class AuthServiceImplTest {
     assertEquals("OK", result.message());
     verify(repository).findUser(command.email());
     verify(repository).saveUser(any(AuthUser.class));
-    verify(service).loginUser(new AuthRequestCommand(command.email(), command.password()));
+    verify(service).loginUser(new AuthCommand(command.email(), command.password()));
   }
 }

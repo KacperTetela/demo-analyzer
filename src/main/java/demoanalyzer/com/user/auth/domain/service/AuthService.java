@@ -1,15 +1,15 @@
 package demoanalyzer.com.user.auth.domain.service;
 
-import demoanalyzer.com.user.auth.domain.command.AuthRequestCommand;
+import demoanalyzer.com.user.auth.domain.command.AuthCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 
 public interface AuthService {
 
-  OperationResult registerUser(AuthRequestCommand command);
+  OperationResult registerUser(AuthCommand command);
 
-  OperationResult loginUser(AuthRequestCommand command);
+  OperationResult loginUser(AuthCommand command);
 
   OperationResult logoutUser(String accessToken);
 
@@ -17,5 +17,5 @@ public interface AuthService {
 
   OperationResult changePasswordUser(ChangePasswordCommand command);
 
-  OperationResult deleteAccountUser(AuthRequestCommand command);
+  OperationResult deleteAccountUser(AuthCommand command);
 }
