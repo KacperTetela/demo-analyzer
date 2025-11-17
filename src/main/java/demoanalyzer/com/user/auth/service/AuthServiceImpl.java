@@ -4,11 +4,11 @@ import demoanalyzer.com.user.auth.domain.command.AuthCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
-import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
-import demoanalyzer.com.user.auth.exception.BadCredentialsException;
-import demoanalyzer.com.user.auth.exception.UsernameAlreadyExistsException;
+import demoanalyzer.com.user.auth.domain.exception.BadCredentialsException;
+import demoanalyzer.com.user.auth.domain.exception.UsernameAlreadyExistsException;
+import demoanalyzer.com.user.auth.domain.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,10 @@ public class AuthServiceImpl implements AuthService {
 
   private final AuthRepository repository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
   @Override
-  public OperationResult registerUser(AuthCommand command) {
+  public void registerUser(AuthCommand command) {
     if (repository.findUser(command.email()).isPresent()) {
       throw new UsernameAlreadyExistsException();
     }
@@ -33,25 +34,25 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public OperationResult loginUser(AuthCommand command) {
+  public void loginUser(AuthCommand command) {
     AuthUser authUser = authenticate(command.email(), command.password());
     return new OperationResult(true, "You are logged in");
   }
 
   @Override
-  public OperationResult logoutUser(String accessToken) {
+  public void logoutUser(String accessToken) {
     return new OperationResult(false, "No implementation of module");
   }
 
   @Override
-  public OperationResult changeUserEmail(ChangeEmailCommand command) {
+  public void changeUserEmail(ChangeEmailCommand command) {
     AuthUser authUser = authenticate(command.email(), command.password());
     repository.updateEmailById(authUser.id(), command.newEmail());
     return new OperationResult(true, "Email has been updated");
   }
 
   @Override
-  public OperationResult changePasswordUser(ChangePasswordCommand command) {
+  public void changePasswordUser(ChangePasswordCommand command) {
     AuthUser authUser = authenticate(command.email(), command.oldPassword());
     String encodedPassword = passwordEncoder.encode(command.newPassword());
     repository.updatePasswordById(authUser.id(), encodedPassword);
@@ -59,10 +60,9 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public OperationResult deleteAccountUser(AuthCommand command) {
-    AuthUser authUser = authenticate(command.email(), command.password());
-    repository.deleteUser(authUser.id());
-    return new OperationResult(true, "Account has been deleted");
+  public void deleteAccountUser(String accessToken) {
+    Long userId = jwtService.extractUserId(accessToken);
+    repository.deleteUser(userId);
   }
 
   private AuthUser authenticate(String email, String password) {

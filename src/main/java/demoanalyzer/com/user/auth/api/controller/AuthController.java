@@ -9,7 +9,6 @@ import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
 import demoanalyzer.com.user.auth.domain.model.OperationResult;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
-import demoanalyzer.com.user.auth.exception.BadCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +60,7 @@ public class AuthController {
   }
 
   @PatchMapping("/password")
-  public ResponseEntity<OperationResult> changePasswordUser(
+  public ResponseEntity<> changePasswordUser(
       @RequestBody ChangePasswordRequest command) {
     OperationResult result =
         authService.changePasswordUser(
@@ -71,10 +70,12 @@ public class AuthController {
   }
 
   @DeleteMapping("/delete")
-  public ResponseEntity<OperationResult> deleteAccountUser(
-      @RequestHeader("Authorization") String authHeader) {
+  public ResponseEntity<Void> deleteAccountUser(
+          @RequestHeader("Authorization") String authHeader) {
+
     String token = authHeader.replace("Bearer ", "");
-    OperationResult result = authService.deleteAccountUser(token);
-    return ResponseEntity.ok(result);
+    authService.deleteAccountUser(token);
+
+    return ResponseEntity.noContent().build();
   }
 }

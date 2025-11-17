@@ -3,19 +3,18 @@ package demoanalyzer.com.user.auth.domain.service;
 import demoanalyzer.com.user.auth.domain.command.AuthCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
 import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
-import demoanalyzer.com.user.auth.domain.model.OperationResult;
 
 public interface AuthService {
 
-  OperationResult registerUser(AuthCommand command);
+  void registerUser(AuthCommand command);
 
-  OperationResult loginUser(AuthCommand command);
+  void loginUser(AuthCommand command);
 
-  OperationResult logoutUser(String accessToken);
+  void logoutUser(String accessToken);
 
-  OperationResult changeUserEmail(ChangeEmailCommand command);
+  void changeUserEmail(ChangeEmailCommand command);
 
-  OperationResult changePasswordUser(ChangePasswordCommand command);
+  void changePasswordUser(ChangePasswordCommand command);
 
-  OperationResult deleteAccountUser(AuthCommand command);
+  void deleteAccountUser(String accessToken);
 }

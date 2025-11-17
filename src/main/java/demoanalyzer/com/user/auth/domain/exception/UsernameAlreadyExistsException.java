@@ -1,4 +1,4 @@
-package demoanalyzer.com.user.auth.exception;
+package demoanalyzer.com.user.auth.domain.exception;
 
 public class UsernameAlreadyExistsException extends RuntimeException {
 
