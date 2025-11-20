@@ -1,20 +1,16 @@
 package demoanalyzer.com.user.auth.domain.service;
 
-import demoanalyzer.com.user.auth.domain.command.AuthCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
-
 public interface AuthService {
 
-  void registerUser(AuthCommand command);
+  String registerUser(String email, String password);
 
-  void loginUser(AuthCommand command);
+  String loginUser(String email, String password);
 
   void logoutUser(String accessToken);
 
-  void changeUserEmail(ChangeEmailCommand command);
+  String changeUserEmail(String email, String password, String newEmail, String accessToken);
 
-  void changePasswordUser(ChangePasswordCommand command);
+  String changePasswordUser(String email, String oldPassword, String newPassword, String accessToken);
 
   void deleteAccountUser(String accessToken);
 }

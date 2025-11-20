@@ -1,13 +1,9 @@
 package demoanalyzer.com.user.auth.service;
 
-import demoanalyzer.com.user.auth.domain.command.AuthCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
+import demoanalyzer.com.user.auth.domain.exception.*;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
-import demoanalyzer.com.user.auth.domain.exception.BadCredentialsException;
-import demoanalyzer.com.user.auth.domain.exception.UsernameAlreadyExistsException;
 import demoanalyzer.com.user.auth.domain.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,53 +18,103 @@ public class AuthServiceImpl implements AuthService {
   private final JwtService jwtService;
 
   @Override
-  public void registerUser(AuthCommand command) {
-    if (repository.findUser(command.email()).isPresent()) {
+  public String registerUser(String email, String password) {
+    if (repository.findUser(email).isPresent()) {
       throw new UsernameAlreadyExistsException();
     }
-    String encodedPassword = passwordEncoder.encode(command.password()); // Hashowanie
-    AuthUser authUser = repository.saveUser(new AuthUser(null, command.email(), encodedPassword));
-    OperationResult login = loginUser(new AuthCommand(authUser.email(), command.password()));
-    if (login.success()) return login;
-    return new OperationResult(false, "An error occurred while creating account");
+
+    String encodedPassword = passwordEncoder.encode(password);
+    AuthUser savedUser;
+    try {
+      savedUser = repository.saveUser(new AuthUser(null, email, encodedPassword));
+      if (savedUser == null) {
+        throw new UserSaveFailedException();
+      }
+    } catch (Exception e) {
+      throw new UserSaveFailedException(e);
+    }
+
+    try {
+      return jwtService.generateToken(savedUser);
+    } catch (Exception e) {
+      throw new TokenGenerationException(e);
+    }
   }
 
   @Override
-  public void loginUser(AuthCommand command) {
-    AuthUser authUser = authenticate(command.email(), command.password());
-    return new OperationResult(true, "You are logged in");
+  public String loginUser(String email, String password) {
+    AuthUser user = authenticate(email, password);
+    return jwtService.generateToken(user);
   }
 
   @Override
   public void logoutUser(String accessToken) {
-    return new OperationResult(false, "No implementation of module");
+    jwtService.invalidateToken(accessToken);
   }
 
   @Override
-  public void changeUserEmail(ChangeEmailCommand command) {
-    AuthUser authUser = authenticate(command.email(), command.password());
-    repository.updateEmailById(authUser.id(), command.newEmail());
-    return new OperationResult(true, "Email has been updated");
+  public String changeUserEmail(
+      String email, String password, String newEmail, String accessToken) {
+    AuthUser authUser = authenticate(email, password);
+    matchToken(authUser, accessToken);
+
+    try {
+      repository.updateEmailById(authUser.id(), newEmail);
+      AuthUser updatedUser = repository.findUser(newEmail).orElseThrow(UserNotFoundException::new);
+
+      jwtService.invalidateToken(jwtService.generateToken(authUser));
+
+      return jwtService.generateToken(updatedUser);
+    } catch (Exception e) {
+      throw new UserUpdateFailedException();
+    }
   }
 
   @Override
-  public void changePasswordUser(ChangePasswordCommand command) {
-    AuthUser authUser = authenticate(command.email(), command.oldPassword());
-    String encodedPassword = passwordEncoder.encode(command.newPassword());
-    repository.updatePasswordById(authUser.id(), encodedPassword);
-    return new OperationResult(true, "Password has been updated");
+  public String changePasswordUser(
+      String email, String oldPassword, String newPassword, String accessToken) {
+    AuthUser authUser = authenticate(email, oldPassword);
+    matchToken(authUser, accessToken);
+    String encodedPassword = passwordEncoder.encode(newPassword);
+
+    try {
+      repository.updatePasswordById(authUser.id(), encodedPassword);
+      AuthUser updatedUser = repository.findUser(email).orElseThrow(UserNotFoundException::new);
+
+      jwtService.invalidateToken(jwtService.generateToken(authUser));
+
+      return jwtService.generateToken(updatedUser);
+    } catch (Exception e) {
+      throw new UserUpdateFailedException();
+    }
   }
 
   @Override
   public void deleteAccountUser(String accessToken) {
     Long userId = jwtService.extractUserId(accessToken);
-    repository.deleteUser(userId);
+
+    try {
+      repository.deleteUser(userId);
+      jwtService.invalidateToken(accessToken);
+    } catch (Exception e) {
+      throw new UserDeleteFailedException();
+    }
   }
 
   private AuthUser authenticate(String email, String password) {
-    return repository
-        .findUser(email)
-        .filter(user -> passwordEncoder.matches(password, user.password()))
-        .orElseThrow(BadCredentialsException::new);
+    AuthUser user = repository.findUser(email).orElseThrow(UserNotFoundException::new);
+
+    if (!passwordEncoder.matches(password, user.password())) {
+      throw new BadCredentialsException();
+    }
+
+    return user;
+  }
+
+  private boolean matchToken(AuthUser user, String accessToken) {
+    if (!jwtService.extractUserId(accessToken).equals(user.id()))
+      throw new BadCredentialsException("Token does not match the provided user");
+
+    return true;
   }
 }

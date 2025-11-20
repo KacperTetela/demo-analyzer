@@ -4,9 +4,6 @@ import demoanalyzer.com.user.auth.api.dto.request.AuthRequest;
 import demoanalyzer.com.user.auth.api.dto.request.ChangeEmailRequest;
 import demoanalyzer.com.user.auth.api.dto.request.ChangePasswordRequest;
 import demoanalyzer.com.user.auth.api.dto.response.JwtResponse;
-import demoanalyzer.com.user.auth.domain.command.AuthCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangeEmailCommand;
-import demoanalyzer.com.user.auth.domain.command.ChangePasswordCommand;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,52 +17,53 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/register")
-  public ResponseEntity<OperationResult> registerUser(@RequestBody AuthRequest request) {
-    OperationResult result =
-        authService.registerUser(new AuthCommand(request.email(), request.password()));
-    return ResponseEntity.ok(result);
+  public ResponseEntity<JwtResponse> registerUser(@RequestBody AuthRequest request) {
+    String token = authService.registerUser(request.email(), request.password());
+
+    return ResponseEntity.ok(new JwtResponse(token, null));
   }
 
   @PostMapping("/login")
   public ResponseEntity<JwtResponse> loginUser(@RequestBody AuthRequest request) {
-    OperationResult result =
-        authService.loginUser(new AuthCommand(request.email(), request.password()));
-    if (!result.success()) {
-      throw BadCredentialsException;
-    }
-    return ResponseEntity.ok(new JwtResponse(result.message(), result.message()));
+    String token = authService.loginUser(request.email(), request.password());
+    return ResponseEntity.ok(new JwtResponse(token, null));
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<Void> logoutUser(
-      @RequestHeader("Authorization") String authHeader) {
+  public ResponseEntity<Void> logoutUser(@RequestHeader("Authorization") String authHeader) {
     String token = authHeader.replace("Bearer ", "");
-    OperationResult result = authService.logoutUser(token);
-    return ResponseEntity.ok(result);
+    authService.logoutUser(token);
+
+    return ResponseEntity.ok().build();
   }
 
   @PatchMapping("/email")
-  public ResponseEntity<Void> changeUserEmail(@RequestBody ChangeEmailRequest request) {
-    OperationResult result =
+  public ResponseEntity<JwtResponse> changeUserEmail(
+      @RequestHeader("Authorization") String authHeader, @RequestBody ChangeEmailRequest request) {
+
+    String token = authHeader.replace("Bearer ", "");
+    String newToken =
         authService.changeUserEmail(
-            new ChangeEmailCommand(request.email(), request.password(), request.newEmail()));
-    return ResponseEntity.ok(result);
+            request.email(), request.password(), request.newEmail(), token);
+
+    return ResponseEntity.ok(new JwtResponse(newToken, null));
   }
 
   @PatchMapping("/password")
-  public ResponseEntity<Void> changePasswordUser(
+  public ResponseEntity<JwtResponse> changePasswordUser(
+      @RequestHeader("Authorization") String authHeader,
       @RequestBody ChangePasswordRequest request) {
-    OperationResult result =
+
+    String token = authHeader.replace("Bearer ", "");
+    String newToken =
         authService.changePasswordUser(
-            new ChangePasswordCommand(
-                request.email(), request.oldPassword(), request.newPassword()));
-    return ResponseEntity.ok(result);
+            request.email(), request.oldPassword(), request.newPassword(), token);
+
+    return ResponseEntity.ok(new JwtResponse(newToken, null));
   }
 
   @DeleteMapping("/delete")
-  public ResponseEntity<Void> deleteAccountUser(
-          @RequestHeader("Authorization") String authHeader) {
-
+  public ResponseEntity<Void> deleteAccountUser(@RequestHeader("Authorization") String authHeader) {
     String token = authHeader.replace("Bearer ", "");
     authService.deleteAccountUser(token);
 
