@@ -1,5 +1,6 @@
 package demoanalyzer.com.user.auth.service;
 
+import demoanalyzer.com.user.auth.domain.exception.TokenGenerationException;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.service.JwtService;
 
@@ -7,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,22 +19,50 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-  private final String secretKey = "q8y3fX0J2+9Z1V4bM6k3v7u1sH9yL2eM5rJx0WzB2cQ=!";
-  private final long expirationMs = 24 * 60 * 60 * 1000;
+  @Value("${jwt.secret}")
+  private String secretKey;
+
+  @Value("${jwt.access.expiration.ms}")
+  private long accessExpirationMs;
+
+  @Value("${jwt.refresh.expiration.ms}")
+  private long refreshExpirationMs;
+
   private final Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
 
   @Override
-  public String generateToken(AuthUser user) {
-    Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + expirationMs);
+  public String generateAccessToken(AuthUser user) {
+    try {
+      Date now = new Date();
+      Date expiryDate = new Date(now.getTime() + accessExpirationMs);
 
-    return Jwts.builder()
-        .setSubject(String.valueOf(user.id()))
-        .claim("email", user.email())
-        .setIssuedAt(now)
-        .setExpiration(expiryDate)
-        .signWith(SignatureAlgorithm.HS256, secretKey)
-        .compact();
+      return Jwts.builder()
+              .setSubject(String.valueOf(user.id()))
+              .claim("email", user.email())
+              .setIssuedAt(now)
+              .setExpiration(expiryDate)
+              .signWith(SignatureAlgorithm.HS256, secretKey)
+              .compact();
+    } catch (Exception e) {
+      throw new TokenGenerationException(e);
+    }
+  }
+
+  @Override
+  public String generateRefreshToken(AuthUser user) {
+    try {
+      Date now = new Date();
+      Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
+
+      return Jwts.builder()
+              .setSubject(String.valueOf(user.id()))
+              .setIssuedAt(now)
+              .setExpiration(expiryDate)
+              .signWith(SignatureAlgorithm.HS256, secretKey)
+              .compact();
+    } catch (Exception e) {
+      throw new TokenGenerationException(e);
+    }
   }
 
   @Override

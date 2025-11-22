@@ -1,6 +1,7 @@
 package demoanalyzer.com.user.auth.service;
 
 import demoanalyzer.com.user.auth.domain.exception.*;
+import demoanalyzer.com.user.auth.domain.model.AuthTokens;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
@@ -18,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
   private final JwtService jwtService;
 
   @Override
-  public String registerUser(String email, String password) {
+  public AuthTokens registerUser(String email, String password) {
     if (repository.findUser(email).isPresent()) {
       throw new UsernameAlreadyExistsException();
     }
@@ -34,17 +35,18 @@ public class AuthServiceImpl implements AuthService {
       throw new UserSaveFailedException(e);
     }
 
-    try {
-      return jwtService.generateToken(savedUser);
-    } catch (Exception e) {
-      throw new TokenGenerationException(e);
-    }
+    String accessToken = jwtService.generateAccessToken(savedUser);
+    String refreshToken = jwtService.generateRefreshToken(savedUser);
+    return new AuthTokens(accessToken, refreshToken);
   }
 
   @Override
-  public String loginUser(String email, String password) {
+  public AuthTokens loginUser(String email, String password) {
     AuthUser user = authenticate(email, password);
-    return jwtService.generateToken(user);
+    String accessToken = jwtService.generateAccessToken(user);
+    String refreshToken = jwtService.generateRefreshToken(user);
+
+    return new AuthTokens(accessToken, refreshToken);
   }
 
   @Override
@@ -53,40 +55,44 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public String changeUserEmail(
+  public AuthTokens changeUserEmail(
       String email, String password, String newEmail, String accessToken) {
     AuthUser authUser = authenticate(email, password);
     matchToken(authUser, accessToken);
 
+    AuthUser updatedUser;
     try {
       repository.updateEmailById(authUser.id(), newEmail);
-      AuthUser updatedUser = repository.findUser(newEmail).orElseThrow(UserNotFoundException::new);
-
-      jwtService.invalidateToken(jwtService.generateToken(authUser));
-
-      return jwtService.generateToken(updatedUser);
+      updatedUser = repository.findUser(newEmail).orElseThrow(UserNotFoundException::new);
     } catch (Exception e) {
       throw new UserUpdateFailedException();
     }
+
+    jwtService.invalidateToken(accessToken);
+    String newAccessToken = jwtService.generateAccessToken(updatedUser);
+    String refreshToken = jwtService.generateRefreshToken(updatedUser);
+    return new AuthTokens(newAccessToken, refreshToken);
   }
 
   @Override
-  public String changePasswordUser(
+  public AuthTokens changePasswordUser(
       String email, String oldPassword, String newPassword, String accessToken) {
     AuthUser authUser = authenticate(email, oldPassword);
     matchToken(authUser, accessToken);
     String encodedPassword = passwordEncoder.encode(newPassword);
 
+    AuthUser updatedUser;
     try {
       repository.updatePasswordById(authUser.id(), encodedPassword);
-      AuthUser updatedUser = repository.findUser(email).orElseThrow(UserNotFoundException::new);
-
-      jwtService.invalidateToken(jwtService.generateToken(authUser));
-
-      return jwtService.generateToken(updatedUser);
+      updatedUser = repository.findUser(email).orElseThrow(UserNotFoundException::new);
     } catch (Exception e) {
       throw new UserUpdateFailedException();
     }
+
+    jwtService.invalidateToken(accessToken);
+    String newAccessToken = jwtService.generateAccessToken(updatedUser);
+    String refreshToken = jwtService.generateRefreshToken(updatedUser);
+    return new AuthTokens(newAccessToken, refreshToken);
   }
 
   @Override

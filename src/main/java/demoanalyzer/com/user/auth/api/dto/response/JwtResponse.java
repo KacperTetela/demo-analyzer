@@ -1,7 +1,9 @@
 package demoanalyzer.com.user.auth.api.dto.response;
 
-public record JwtResponse(String accessToken, String refreshToken, String type) {
-  public JwtResponse(String accessToken, String refreshToken) {
-    this(accessToken, refreshToken, "Bearer");
+import demoanalyzer.com.user.auth.domain.model.AuthTokens;
+
+public record JwtResponse(String accessToken, String refreshToken) {
+  public static JwtResponse from(AuthTokens tokens) {
+    return new JwtResponse(tokens.accessToken(), tokens.refreshToken());
   }
 }

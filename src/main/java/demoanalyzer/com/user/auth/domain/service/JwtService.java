@@ -3,7 +3,10 @@ package demoanalyzer.com.user.auth.domain.service;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 
 public interface JwtService {
-  String generateToken(AuthUser user);
+
+  String generateAccessToken(AuthUser user);
+
+  String generateRefreshToken(AuthUser user);
 
   boolean isTokenValid(String token);
 
