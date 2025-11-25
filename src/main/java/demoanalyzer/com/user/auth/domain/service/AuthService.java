@@ -12,7 +12,10 @@ public interface AuthService {
 
   AuthTokens changeUserEmail(String email, String password, String newEmail, String accessToken);
 
-  AuthTokens changePasswordUser(String email, String oldPassword, String newPassword, String accessToken);
+  AuthTokens changePasswordUser(
+      String email, String oldPassword, String newPassword, String accessToken);
 
   void deleteAccountUser(String accessToken);
+
+  AuthTokens refreshAccessToken(String refreshToken);
 }

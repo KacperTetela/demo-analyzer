@@ -6,6 +6,7 @@ import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import demoanalyzer.com.user.auth.domain.service.AuthService;
 import demoanalyzer.com.user.auth.domain.service.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public AuthTokens changeUserEmail(
       String email, String password, String newEmail, String accessToken) {
     AuthUser authUser = authenticate(email, password);
@@ -75,6 +77,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public AuthTokens changePasswordUser(
       String email, String oldPassword, String newPassword, String accessToken) {
     AuthUser authUser = authenticate(email, oldPassword);
@@ -96,6 +99,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void deleteAccountUser(String accessToken) {
     Long userId = jwtService.extractUserId(accessToken);
 
@@ -105,6 +109,24 @@ public class AuthServiceImpl implements AuthService {
     } catch (Exception e) {
       throw new UserDeleteFailedException();
     }
+  }
+
+  @Override
+  public AuthTokens refreshAccessToken(String refreshToken) {
+    Long userId = jwtService.extractUserId(refreshToken);
+
+    if (!jwtService.isRefreshTokenValid(refreshToken)) {
+      throw new BadCredentialsException("Refresh token is invalid");
+    }
+
+    AuthUser user = repository.findUser(userId).orElseThrow(UserNotFoundException::new);
+
+    jwtService.invalidateToken(refreshToken);
+
+    String newAccess = jwtService.generateAccessToken(user);
+    String newRefresh = jwtService.generateRefreshToken(user);
+
+    return new AuthTokens(newAccess, newRefresh);
   }
 
   private AuthUser authenticate(String email, String password) {

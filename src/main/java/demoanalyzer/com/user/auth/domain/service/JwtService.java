@@ -8,9 +8,11 @@ public interface JwtService {
 
   String generateRefreshToken(AuthUser user);
 
-  boolean isTokenValid(String token);
-
   Long extractUserId(String accessToken);
 
   void invalidateToken(String token);
+
+  boolean isAccessTokenValid(String token);
+
+  boolean isRefreshTokenValid(String token);
 }

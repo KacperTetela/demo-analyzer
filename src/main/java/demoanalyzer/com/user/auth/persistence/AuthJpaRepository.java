@@ -22,12 +22,10 @@ public interface AuthJpaRepository extends JpaRepository<AuthUserEntity, Long> {
   void deleteById(Long aLong);
 
   @Modifying
-  @Transactional
   @Query("UPDATE AuthUserEntity u SET u.password = :password WHERE u.id = :id")
   void updatePasswordById(@Param("id") Long id, @Param("password") String password);
 
   @Modifying
-  @Transactional
   @Query("UPDATE AuthUserEntity u SET u.email = :email WHERE u.id = :id")
   void updateEmailById(@Param("id") Long id, @Param("email") String email);
 }

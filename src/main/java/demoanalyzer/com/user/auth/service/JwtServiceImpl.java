@@ -37,12 +37,13 @@ public class JwtServiceImpl implements JwtService {
       Date expiryDate = new Date(now.getTime() + accessExpirationMs);
 
       return Jwts.builder()
-              .setSubject(String.valueOf(user.id()))
-              .claim("email", user.email())
-              .setIssuedAt(now)
-              .setExpiration(expiryDate)
-              .signWith(SignatureAlgorithm.HS256, secretKey)
-              .compact();
+          .setSubject(String.valueOf(user.id()))
+          .claim("email", user.email())
+          .claim("type", "ACCESS")
+          .setIssuedAt(now)
+          .setExpiration(expiryDate)
+          .signWith(SignatureAlgorithm.HS256, secretKey)
+          .compact();
     } catch (Exception e) {
       throw new TokenGenerationException(e);
     }
@@ -55,27 +56,14 @@ public class JwtServiceImpl implements JwtService {
       Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
 
       return Jwts.builder()
-              .setSubject(String.valueOf(user.id()))
-              .setIssuedAt(now)
-              .setExpiration(expiryDate)
-              .signWith(SignatureAlgorithm.HS256, secretKey)
-              .compact();
+          .setSubject(String.valueOf(user.id()))
+          .claim("type", "REFRESH")
+          .setIssuedAt(now)
+          .setExpiration(expiryDate)
+          .signWith(SignatureAlgorithm.HS256, secretKey)
+          .compact();
     } catch (Exception e) {
       throw new TokenGenerationException(e);
-    }
-  }
-
-  @Override
-  public boolean isTokenValid(String token) {
-    if (invalidatedTokens.contains(token)) {
-      return false;
-    }
-
-    try {
-      Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-      return true;
-    } catch (Exception e) {
-      return false;
     }
   }
 
@@ -88,5 +76,34 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public void invalidateToken(String token) {
     invalidatedTokens.add(token);
+  }
+
+  @Override
+  public boolean isAccessTokenValid(String token) {
+    return isTokenValid(token) && "ACCESS".equals(getTokenType(token));
+  }
+
+  @Override
+  public boolean isRefreshTokenValid(String token) {
+    return isTokenValid(token) && "REFRESH".equals(getTokenType(token));
+  }
+
+  private String getTokenType(String token) {
+    Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+
+    return (String) claims.get("type");
+  }
+
+  private boolean isTokenValid(String token) {
+    if (invalidatedTokens.contains(token)) {
+      return false;
+    }
+
+    try {
+      Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

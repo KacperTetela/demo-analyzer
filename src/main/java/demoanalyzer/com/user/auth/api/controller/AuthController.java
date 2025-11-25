@@ -65,4 +65,14 @@ public class AuthController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<JwtResponse> refreshToken(
+          @RequestHeader("Authorization") String refreshToken) {
+
+    AuthTokens newTokens = authService.refreshAccessToken(refreshToken);
+
+    return ResponseEntity.ok(JwtResponse.from(newTokens));
+  }
+
 }
