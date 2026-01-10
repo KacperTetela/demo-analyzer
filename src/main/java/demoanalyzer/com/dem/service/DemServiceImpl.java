@@ -1,11 +1,11 @@
 package demoanalyzer.com.dem.service;
 
-import demoanalyzer.com.dem.domain.service.IntegrationService;
+import demoanalyzer.com.dem.domain.service.DemService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class IntegrationServiceImpl implements IntegrationService {
+public class DemServiceImpl implements DemService {
     @Override
     public void handleDemFile(MultipartFile file) {
 

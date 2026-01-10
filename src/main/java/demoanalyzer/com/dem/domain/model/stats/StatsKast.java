@@ -1,4 +1,4 @@
 package demoanalyzer.com.dem.domain.model.stats;
 
 public record StatsKast(
-    String name, Long steamId, String side, int nRounds, int kastRounds, double kast) {}
+    String name, Long steamId, Side side, Integer nRounds, Integer kastRounds, Integer kast) {}
