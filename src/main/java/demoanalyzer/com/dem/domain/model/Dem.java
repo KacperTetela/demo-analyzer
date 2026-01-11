@@ -4,6 +4,7 @@ import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
 import demoanalyzer.com.dem.domain.model.stats.StatsRating;
+import demoanalyzer.com.dem.domain.model.status.DemAnalysisStatus;
 import demoanalyzer.com.dem.domain.model.team.TeamInfo;
 
 import java.time.Instant;
@@ -12,11 +13,18 @@ import java.util.List;
 public class Dem {
   private Long id;
   private Long ownerId;
-  private Instant createdAt;
+  private final Instant createdAt = Instant.now();
+  private DemAnalysisStatus status = DemAnalysisStatus.PENDING;
+  private Instant finishedAt;
   private Header header;
   private TeamInfo teamA;
   private TeamInfo teamB;
   private List<StatsAdr> statsAdr;
   private List<StatsKast> statsKast;
   private List<StatsRating> statsRating;
+
+  //init Dem
+  public Dem(Long ownerId) {
+    this.ownerId = ownerId;
+  }
 }

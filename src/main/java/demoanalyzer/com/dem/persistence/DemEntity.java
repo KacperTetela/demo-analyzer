@@ -1,5 +1,6 @@
 package demoanalyzer.com.dem.persistence;
 
+import demoanalyzer.com.dem.domain.model.status.DemAnalysisStatus;
 import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
@@ -25,7 +26,13 @@ public class DemEntity {
   private Long id;
 
   private Long ownerId;
+
   private Instant createdAt;
+
+  @Enumerated(EnumType.STRING)
+  private DemAnalysisStatus status;
+
+  private Instant finishedAt;
 
   @JdbcTypeCode(SqlTypes.JSON)
   private Header header;

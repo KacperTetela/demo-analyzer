@@ -9,7 +9,7 @@ import java.util.Optional;
 @Component
 public class AuthRepositoryAdapter implements AuthRepository {
 
-  AuthJpaRepository authJpaRepository;
+  private final AuthJpaRepository authJpaRepository;
 
   public AuthRepositoryAdapter(AuthJpaRepository authJpaRepository) {
     this.authJpaRepository = authJpaRepository;

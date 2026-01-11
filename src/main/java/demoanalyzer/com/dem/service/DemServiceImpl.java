@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class DemServiceImpl implements DemService {
-    @Override
-    public void handleDemFile(MultipartFile file) {
-
-    }
+  @Override
+  public Long handleDemFile(MultipartFile file) {
+    return null;
+  }
 }
