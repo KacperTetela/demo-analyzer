@@ -4,18 +4,14 @@ import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
 import demoanalyzer.com.dem.domain.model.stats.StatsRating;
-import demoanalyzer.com.dem.domain.model.status.DemAnalysisStatus;
+import demoanalyzer.com.dem.domain.model.metadata.Metadata;
 import demoanalyzer.com.dem.domain.model.team.TeamInfo;
 
-import java.time.Instant;
 import java.util.List;
 
 public class Dem {
   private Long id;
-  private Long ownerId;
-  private final Instant createdAt = Instant.now();
-  private DemAnalysisStatus status = DemAnalysisStatus.PENDING;
-  private Instant finishedAt;
+  private Metadata metadata;
   private Header header;
   private TeamInfo teamA;
   private TeamInfo teamB;
@@ -23,8 +19,8 @@ public class Dem {
   private List<StatsKast> statsKast;
   private List<StatsRating> statsRating;
 
-  //init Dem
+  // init Dem
   public Dem(Long ownerId) {
-    this.ownerId = ownerId;
+    this.metadata = new Metadata(ownerId);
   }
 }

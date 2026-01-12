@@ -1,7 +1,8 @@
 package demoanalyzer.com.dem.api.controller;
 
+import demoanalyzer.com.dem.api.dto.DemDetailsResponse;
 import demoanalyzer.com.dem.api.dto.DemStatusResponse;
-import demoanalyzer.com.dem.domain.model.status.DemAnalysisStatus;
+import demoanalyzer.com.dem.domain.model.metadata.AnalysisStatus;
 import demoanalyzer.com.dem.domain.service.DemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -22,13 +23,20 @@ public class DemController {
   public ResponseEntity<DemStatusResponse> upload(@RequestPart("file") MultipartFile file) {
 
     return ResponseEntity.ok(
-        new DemStatusResponse(1, Instant.now(), DemAnalysisStatus.PENDING, ""));
+        new DemStatusResponse(1, Instant.now(), AnalysisStatus.PENDING, ""));
   }
 
   @GetMapping
   public ResponseEntity<DemStatusResponse> checkStatus(@PathVariable Long demId) {
 
     return ResponseEntity.ok(
-        new DemStatusResponse(1, Instant.now(), DemAnalysisStatus.PENDING, ""));
+        new DemStatusResponse(1, Instant.now(), AnalysisStatus.PENDING, ""));
+  }
+
+  @GetMapping
+  public ResponseEntity<DemDetailsResponse> download(@PathVariable Long demId) {
+
+    return ResponseEntity.ok(
+            new DemStatusResponse(1, Instant.now(), AnalysisStatus.PENDING, ""));
   }
 }

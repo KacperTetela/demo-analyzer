@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemRepositoryAdapter implements DemRepository {
-  private final AuthJpaRepository authJpaRepository;
+  private final DemJpaRepository demJpaRepository;
 
-  public DemRepositoryAdapter(AuthJpaRepository authJpaRepository) {
-    this.authJpaRepository = authJpaRepository;
+  public DemRepositoryAdapter(DemJpaRepository demJpaRepository) {
+    this.demJpaRepository = demJpaRepository;
   }
 }
