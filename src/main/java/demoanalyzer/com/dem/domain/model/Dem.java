@@ -21,6 +21,40 @@ public class Dem {
 
   // init Dem
   public Dem(Long ownerId) {
+    this.id = 1L; // Database Identity
     this.metadata = new Metadata(ownerId);
+    this.header = new Header("", "");
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public Metadata getMetadata() {
+    return metadata;
+  }
+
+  public Header getHeader() {
+    return header;
+  }
+
+  public TeamInfo getTeamA() {
+    return teamA;
+  }
+
+  public TeamInfo getTeamB() {
+    return teamB;
+  }
+
+  public List<StatsAdr> getStatsAdr() {
+    return statsAdr;
+  }
+
+  public List<StatsKast> getStatsKast() {
+    return statsKast;
+  }
+
+  public List<StatsRating> getStatsRating() {
+    return statsRating;
   }
 }

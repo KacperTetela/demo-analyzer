@@ -10,16 +10,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class DemServiceImpl implements DemService {
   @Override
   public Metadata handleDemFile(MultipartFile file) {
-    return null;
+    return new Metadata(Long.valueOf(1337));
   }
 
   @Override
   public Metadata getDemStatus(Long demId) {
-    return null;
+    return new Metadata(Long.valueOf(1337));
   }
 
   @Override
   public Dem getDemDetails(Long demId) {
-    return null;
+    return new Dem(demId);
   }
 }

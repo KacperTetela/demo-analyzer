@@ -1,5 +1,6 @@
 package demoanalyzer.com.dem.api.dto;
 
+import demoanalyzer.com.dem.domain.model.Dem;
 import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
@@ -15,9 +16,25 @@ public record DemDetailsResponse(
     Instant createdAt,
     Instant finishedAt,
     AnalysisStatus status,
-    Header header,
+    String mapName,
+    String serverName,
     TeamInfo teamA,
     TeamInfo teamB,
     List<StatsAdr> statsAdr,
     List<StatsKast> statsKast,
-    List<StatsRating> statsRating) {}
+    List<StatsRating> statsRating) {
+  public static DemDetailsResponse from(Dem dem) {
+    return new DemDetailsResponse(
+        dem.getId(),
+        dem.getMetadata().getCreatedAt(),
+        dem.getMetadata().getFinishedAt(),
+        dem.getMetadata().getStatus(),
+        dem.getHeader().mapName(),
+        dem.getHeader().serverName(),
+        dem.getTeamA(),
+        dem.getTeamB(),
+        dem.getStatsAdr(),
+        dem.getStatsKast(),
+        dem.getStatsRating());
+  }
+}
