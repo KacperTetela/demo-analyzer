@@ -46,6 +46,9 @@ public class DemEntity {
   private List<StatsRating> statsRating = new ArrayList<>();
 
   public static Dem toDomain(DemEntity entity) {
+    if (entity == null || entity.getMetadata() == null || entity.getMetadata().getOwner() == null) {
+      throw new IllegalArgumentException("Cannot convert null entity or entity with missing metadata to domain model");
+    }
     return new Dem(entity.getMetadata().getOwner().getId());
   }
 }
