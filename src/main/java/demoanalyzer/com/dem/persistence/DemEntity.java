@@ -1,5 +1,6 @@
 package demoanalyzer.com.dem.persistence;
 
+import demoanalyzer.com.dem.domain.model.Dem;
 import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
@@ -43,4 +44,8 @@ public class DemEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   private List<StatsRating> statsRating = new ArrayList<>();
+
+  public static Dem toDomain(DemEntity entity) {
+    return new Dem(entity.getMetadata().getOwner().getId());
+  }
 }
