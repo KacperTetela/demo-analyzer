@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.api.dto;
+package demoanalyzer.com.dem.api.dto.response;
 
 import demoanalyzer.com.dem.domain.model.metadata.AnalysisStatus;
 import demoanalyzer.com.dem.domain.model.metadata.Metadata;

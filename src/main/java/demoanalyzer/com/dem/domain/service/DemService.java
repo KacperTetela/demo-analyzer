@@ -5,9 +5,9 @@ import demoanalyzer.com.dem.domain.model.metadata.Metadata;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface DemService {
-  Metadata handleDemFile(MultipartFile file);
+  Metadata handleDemFile(MultipartFile file, Long ownerId);
 
-  Metadata getDemStatus(Long demId);
+  Metadata getDemStatus(Long demId, Long ownerId);
 
-  Dem getDemDetails(Long demId);
+  Dem getDemDetails(Long demId, Long ownerId);
 }

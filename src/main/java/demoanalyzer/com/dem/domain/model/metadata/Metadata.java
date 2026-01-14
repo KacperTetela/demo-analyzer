@@ -27,4 +27,18 @@ public class Metadata {
   public AnalysisStatus getStatus() {
     return status;
   }
+
+  public Metadata(Long ownerId, AnalysisStatus status, Instant finishedAt) {
+    this.ownerId = ownerId;
+    this.status = status;
+    this.finishedAt = finishedAt;
+  }
+
+  public void setFinishedAt(Instant finishedAt) {
+    this.finishedAt = finishedAt;
+  }
+
+  public void setStatus(AnalysisStatus status) {
+    this.status = status;
+  }
 }

@@ -21,7 +21,8 @@ public class Dem {
 
   // init Dem
   public Dem(Long ownerId) {
-    this.id = 1L; // Database Identity
+    this.id = null;
+
     this.metadata = new Metadata(ownerId);
     this.header = new Header("", "");
   }
@@ -56,5 +57,29 @@ public class Dem {
 
   public List<StatsRating> getStatsRating() {
     return statsRating;
+  }
+
+  public void setHeader(Header header) {
+    this.header = header;
+  }
+
+  public void setTeamA(TeamInfo teamA) {
+    this.teamA = teamA;
+  }
+
+  public void setTeamB(TeamInfo teamB) {
+    this.teamB = teamB;
+  }
+
+  public void setStatsAdr(List<StatsAdr> statsAdr) {
+    this.statsAdr = statsAdr;
+  }
+
+  public void setStatsKast(List<StatsKast> statsKast) {
+    this.statsKast = statsKast;
+  }
+
+  public void setStatsRating(List<StatsRating> statsRating) {
+    this.statsRating = statsRating;
   }
 }

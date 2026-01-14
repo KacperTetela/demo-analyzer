@@ -1,8 +1,10 @@
 package demoanalyzer.com.dem.persistence;
 
-import demoanalyzer.com.dem.domain.model.repository.DemRepository;
-import demoanalyzer.com.user.auth.persistence.AuthJpaRepository;
+import demoanalyzer.com.dem.domain.model.Dem;
+import demoanalyzer.com.dem.domain.repository.DemRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class DemRepositoryAdapter implements DemRepository {
@@ -11,4 +13,11 @@ public class DemRepositoryAdapter implements DemRepository {
   public DemRepositoryAdapter(DemJpaRepository demJpaRepository) {
     this.demJpaRepository = demJpaRepository;
   }
+
+  @Override
+  public Dem save(Dem dem) {
+    return dem;
+  }
+
+
 }

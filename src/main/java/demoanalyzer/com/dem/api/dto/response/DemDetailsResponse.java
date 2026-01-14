@@ -1,7 +1,6 @@
-package demoanalyzer.com.dem.api.dto;
+package demoanalyzer.com.dem.api.dto.response;
 
 import demoanalyzer.com.dem.domain.model.Dem;
-import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
 import demoanalyzer.com.dem.domain.model.stats.StatsRating;
