@@ -19,5 +19,10 @@ public class DemRepositoryAdapter implements DemRepository {
     return dem;
   }
 
+  @Override
+  public Optional<Dem> findById(Long id) {
+    return Optional.empty();
+  }
+
 
 }
