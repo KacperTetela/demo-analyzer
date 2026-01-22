@@ -4,10 +4,14 @@ import demoanalyzer.com.dem.domain.model.Dem;
 import demoanalyzer.com.dem.domain.model.metadata.Metadata;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface DemService {
-  Metadata handleDemFile(MultipartFile file, Long ownerId);
+import java.util.List;
 
-  Metadata getDemStatus(Long demId, Long ownerId);
+public interface DemService {
+  Dem handleDemFile(MultipartFile file, Long ownerId);
+
+  Dem getDemStatus(Long demId, Long ownerId);
+
+  List<Dem> getAllDemsStatuses(Long ownerId);
 
   Dem getDemDetails(Long demId, Long ownerId);
 }

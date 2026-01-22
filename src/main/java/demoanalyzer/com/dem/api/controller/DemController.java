@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/dem")
 @RequiredArgsConstructor
@@ -24,6 +26,14 @@ public class DemController {
     return ResponseEntity.ok(
         DemStatusResponse.from(
             demService.handleDemFile(uploadedFile, Long.parseLong(authentication.getName()))));
+  }
+
+  @GetMapping("/history")
+  public ResponseEntity<List<DemStatusResponse>> checkAllAvailableDems(
+      Authentication authentication) {
+    return ResponseEntity.ok(
+        DemStatusResponse.from(
+            demService.getAllDemsStatuses(Long.parseLong(authentication.getName()))));
   }
 
   @GetMapping("/{demId}/status")

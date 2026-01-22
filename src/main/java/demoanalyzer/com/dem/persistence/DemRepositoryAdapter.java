@@ -23,6 +23,4 @@ public class DemRepositoryAdapter implements DemRepository {
   public Optional<Dem> findById(Long id) {
     return Optional.empty();
   }
-
-
 }

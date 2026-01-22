@@ -27,6 +27,17 @@ public class Dem {
     this.header = new Header("", "");
   }
 
+  public Dem(Long id, Metadata metadata, Header header, TeamInfo teamA, TeamInfo teamB, List<StatsAdr> statsAdr, List<StatsKast> statsKast, List<StatsRating> statsRating) {
+    this.id = id;
+    this.metadata = metadata;
+    this.header = header;
+    this.teamA = teamA;
+    this.teamB = teamB;
+    this.statsAdr = statsAdr;
+    this.statsKast = statsKast;
+    this.statsRating = statsRating;
+  }
+
   public Long getId() {
     return id;
   }
