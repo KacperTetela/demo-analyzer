@@ -1,10 +1,12 @@
 package demoanalyzer.com.dem.persistence;
 
+import demoanalyzer.com.dem.domain.model.Dem;
 import demoanalyzer.com.dem.domain.model.header.Header;
 import demoanalyzer.com.dem.domain.model.stats.StatsAdr;
 import demoanalyzer.com.dem.domain.model.stats.StatsKast;
 import demoanalyzer.com.dem.domain.model.stats.StatsRating;
 import demoanalyzer.com.dem.domain.model.team.TeamInfo;
+import demoanalyzer.com.dem.persistence.header.HeaderEntity;
 import demoanalyzer.com.dem.persistence.metadata.MetadataEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,4 +45,26 @@ public class DemEntity {
 
   @JdbcTypeCode(SqlTypes.JSON)
   private List<StatsRating> statsRating = new ArrayList<>();
+
+  public static DemEntity from(Dem dem) {
+    return new DemEntity(
+        dem.getId(),
+        MetadataEntity.from(dem.getMetadata()),
+        HeaderEntity.from(dem.getHeader()),
+        dem.getTeamA(),
+        dem.getTeamB(),
+        dem.getStatsAdr(),
+        dem.getStatsKast(),
+        dem.getStatsRating());
+  }
+
+
+
+  /**
+   * public static AuthUserEntity from(AuthUser authUser) { return new
+   * AuthUserEntity(authUser.email(), authUser.password()); }
+   *
+   * <p>public static AuthUser from(AuthUserEntity authUserEntity) { return new AuthUser(
+   * authUserEntity.getId(), authUserEntity.getEmail(), authUserEntity.getPassword()); }
+   */
 }

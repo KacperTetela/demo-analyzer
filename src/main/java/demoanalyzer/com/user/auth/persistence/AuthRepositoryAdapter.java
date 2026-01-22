@@ -2,18 +2,16 @@ package demoanalyzer.com.user.auth.persistence;
 
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class AuthRepositoryAdapter implements AuthRepository {
 
   private final AuthJpaRepository authJpaRepository;
-
-  public AuthRepositoryAdapter(AuthJpaRepository authJpaRepository) {
-    this.authJpaRepository = authJpaRepository;
-  }
 
   @Override
   public Optional<AuthUser> findUser(String email) {
