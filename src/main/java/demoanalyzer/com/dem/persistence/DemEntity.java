@@ -58,7 +58,17 @@ public class DemEntity {
         dem.getStatsRating());
   }
 
-
+  public static Dem from(DemEntity demEntity) {
+    return new Dem(
+        demEntity.id,
+        MetadataEntity.from(demEntity.getMetadata()),
+        HeaderEntity.from(demEntity.getHeader()),
+        demEntity.getTeamA(),
+        demEntity.getTeamB(),
+        demEntity.getStatsAdr(),
+        demEntity.getStatsKast(),
+        demEntity.getStatsRating());
+  }
 
   /**
    * public static AuthUserEntity from(AuthUser authUser) { return new
