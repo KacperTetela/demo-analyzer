@@ -9,9 +9,7 @@ import java.util.List;
 public interface DemService {
   Dem handleDemFile(MultipartFile file, Long ownerId);
 
-  Dem getDemStatus(Long demId, Long ownerId);
+  Dem getDem(Long demId, Long ownerId);
 
-  List<Dem> getAllDemsStatuses(Long ownerId);
-
-  Dem getDemDetails(Long demId, Long ownerId);
+  List<Dem> getUserDemos(Long ownerId);
 }

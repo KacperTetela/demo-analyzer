@@ -33,7 +33,7 @@ public class DemController {
       @PathVariable Long demId, Authentication authentication) {
 
     return ResponseEntity.ok(
-        DemHandleResponse.from(demService.getDemStatus(demId, getUserId(authentication))));
+        DemHandleResponse.from(demService.getDem(demId, getUserId(authentication))));
   }
 
   @GetMapping("/{demId}/header")
@@ -41,12 +41,13 @@ public class DemController {
       @PathVariable Long demId, Authentication authentication) {
 
     return ResponseEntity.ok(
-        DemHeaderResponse.from(demService.getDemStatus(demId, getUserId(authentication))));
+        DemHeaderResponse.from(demService.getDem(demId, getUserId(authentication))));
   }
 
   @GetMapping("/history")
   public ResponseEntity<List<DemHeaderResponse>> checkAllDemHeaders(Authentication authentication) {
-    return null;
+    return ResponseEntity.ok(
+        DemHeaderResponse.from(demService.getUserDemos(getUserId(authentication))));
   }
 
   @GetMapping("/{demId}/details")
@@ -54,7 +55,7 @@ public class DemController {
       @PathVariable Long demId, Authentication authentication) {
 
     return ResponseEntity.ok(
-        DemDetailsResponse.from(demService.getDemDetails(demId, getUserId(authentication))));
+        DemDetailsResponse.from(demService.getDem(demId, getUserId(authentication))));
   }
 
   private Long getUserId(Authentication authentication) {

@@ -8,6 +8,7 @@ import demoanalyzer.com.dem.persistence.repository.DemJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,12 +20,16 @@ public class DemRepositoryAdapter implements DemRepository {
 
   @Override
   public Dem save(Dem dem) {
-    DemEntity savedEntity = demJpaRepository.save(mapper.toEntity(dem));
-    return mapper.toDomain(savedEntity);
+    return mapper.toDomain(demJpaRepository.save(mapper.toEntity(dem)));
   }
 
   @Override
   public Optional<Dem> findById(Long id) {
     return demJpaRepository.findById(id).map(mapper::toDomain);
+  }
+
+  @Override
+  public List<Dem> findAll(Long ownerId) {
+    return demJpaRepository.findAllForOwner(ownerId).stream().map(mapper::toDomain).toList();
   }
 }
