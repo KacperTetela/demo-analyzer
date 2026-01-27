@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.persistence.metadata;
+package demoanalyzer.com.dem.persistence.entity.metadata;
 
 import demoanalyzer.com.dem.domain.model.metadata.AnalysisStatus;
 import demoanalyzer.com.dem.domain.model.metadata.Metadata;
@@ -24,20 +24,4 @@ public class MetadataEntity {
 
   @Enumerated(EnumType.STRING)
   private AnalysisStatus status;
-
-  public static MetadataEntity from(Metadata metadata) {
-    return new MetadataEntity(
-        metadata.getOwnerId(),
-        metadata.getCreatedAt(),
-        metadata.getFinishedAt(),
-        metadata.getStatus());
-  }
-
-  public static Metadata from(MetadataEntity metadataEntity) {
-    return new Metadata(
-        metadataEntity.owner.getId(),
-        metadataEntity.getCreatedAt(),
-        metadataEntity.getFinishedAt(),
-        metadataEntity.getStatus());
-  }
 }

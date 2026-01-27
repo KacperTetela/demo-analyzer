@@ -3,11 +3,11 @@ package demoanalyzer.com.user.auth.persistence;
 import demoanalyzer.com.user.auth.domain.model.AuthUser;
 import demoanalyzer.com.user.auth.domain.repository.AuthRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class AuthRepositoryAdapter implements AuthRepository {
 

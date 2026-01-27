@@ -22,6 +22,7 @@ public record DemDetailsResponse(
     List<StatsAdr> statsAdr,
     List<StatsKast> statsKast,
     List<StatsRating> statsRating) {
+
   public static DemDetailsResponse from(Dem dem) {
     return new DemDetailsResponse(
         dem.getId(),

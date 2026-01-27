@@ -6,13 +6,14 @@ import demoanalyzer.com.dem.domain.model.metadata.AnalysisStatus;
 import java.time.Instant;
 import java.util.List;
 
-public record DemStatusResponse(long demId, Instant createdAt, AnalysisStatus status) {
-  public static DemStatusResponse from(Dem dem) {
-    return new DemStatusResponse(
+public record DemHandleResponse(long demId, Instant createdAt, AnalysisStatus status) {
+
+  public static DemHandleResponse from(Dem dem) {
+    return new DemHandleResponse(
         dem.getId(), dem.getMetadata().getCreatedAt(), dem.getMetadata().getStatus());
   }
 
-  public static List<DemStatusResponse> from(List<Dem> dems) {
+  public static List<DemHandleResponse> from(List<Dem> dems) {
     if (dems == null) {
       return List.of();
     }
@@ -20,7 +21,7 @@ public record DemStatusResponse(long demId, Instant createdAt, AnalysisStatus st
     return dems.stream()
         .map(
             dem ->
-                new DemStatusResponse(
+                new DemHandleResponse(
                     dem.getId(), dem.getMetadata().getCreatedAt(), dem.getMetadata().getStatus()))
         .toList();
   }

@@ -1,7 +1,8 @@
 package demoanalyzer.com.dem.api.controller;
 
 import demoanalyzer.com.dem.api.dto.response.DemDetailsResponse;
-import demoanalyzer.com.dem.api.dto.response.DemStatusResponse;
+import demoanalyzer.com.dem.api.dto.response.DemHandleResponse;
+import demoanalyzer.com.dem.api.dto.response.DemHeaderResponse;
 import demoanalyzer.com.dem.domain.service.DemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,35 +21,43 @@ public class DemController {
   private final DemService demService;
 
   @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<DemStatusResponse> upload(
+  public ResponseEntity<DemHandleResponse> upload(
       @RequestPart("file") MultipartFile uploadedFile, Authentication authentication) {
 
     return ResponseEntity.ok(
-        DemStatusResponse.from(
-            demService.handleDemFile(uploadedFile, Long.parseLong(authentication.getName()))));
-  }
-
-  @GetMapping("/history")
-  public ResponseEntity<List<DemStatusResponse>> checkAllAvailableDems(
-      Authentication authentication) {
-    return ResponseEntity.ok(
-        DemStatusResponse.from(
-            demService.getAllDemsStatuses(Long.parseLong(authentication.getName()))));
+        DemHandleResponse.from(demService.handleDemFile(uploadedFile, getUserId(authentication))));
   }
 
   @GetMapping("/{demId}/status")
-  public ResponseEntity<DemStatusResponse> checkStatus(
+  public ResponseEntity<DemHandleResponse> checkDemStatus(
       @PathVariable Long demId, Authentication authentication) {
+
     return ResponseEntity.ok(
-        DemStatusResponse.from(
-            demService.getDemStatus(demId, Long.parseLong(authentication.getName()))));
+        DemHandleResponse.from(demService.getDemStatus(demId, getUserId(authentication))));
   }
 
-  @GetMapping("/{demId}/download")
-  public ResponseEntity<DemDetailsResponse> download(
+  @GetMapping("/{demId}/header")
+  public ResponseEntity<DemHeaderResponse> checkDemHeader(
       @PathVariable Long demId, Authentication authentication) {
+
     return ResponseEntity.ok(
-        DemDetailsResponse.from(
-            demService.getDemDetails(demId, Long.parseLong(authentication.getName()))));
+        DemHeaderResponse.from(demService.getDemStatus(demId, getUserId(authentication))));
+  }
+
+  @GetMapping("/history")
+  public ResponseEntity<List<DemHeaderResponse>> checkAllDemHeaders(Authentication authentication) {
+    return null;
+  }
+
+  @GetMapping("/{demId}/details")
+  public ResponseEntity<DemDetailsResponse> getDemDetails(
+      @PathVariable Long demId, Authentication authentication) {
+
+    return ResponseEntity.ok(
+        DemDetailsResponse.from(demService.getDemDetails(demId, getUserId(authentication))));
+  }
+
+  private Long getUserId(Authentication authentication) {
+    return Long.parseLong(authentication.getName());
   }
 }
