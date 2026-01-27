@@ -17,12 +17,16 @@ public record DemHeaderResponse(
     TeamInfo teamB) {
 
   public static DemHeaderResponse from(Dem dem) {
+
+    String mapName = dem.getHeader() != null ? dem.getHeader().mapName() : null;
+    String serverName = dem.getHeader() != null ? dem.getHeader().serverName() : null;
+
     return new DemHeaderResponse(
         dem.getId(),
         dem.getMetadata().getCreatedAt(),
         dem.getMetadata().getStatus(),
-        dem.getHeader().mapName(),
-        dem.getHeader().serverName(),
+        mapName,
+        serverName,
         dem.getTeamA(),
         dem.getTeamB());
   }
@@ -32,17 +36,6 @@ public record DemHeaderResponse(
       return List.of();
     }
 
-    return dems.stream()
-        .map(
-            dem ->
-                new DemHeaderResponse(
-                    dem.getId(),
-                    dem.getMetadata().getCreatedAt(),
-                    dem.getMetadata().getStatus(),
-                    dem.getHeader().mapName(),
-                    dem.getHeader().serverName(),
-                    dem.getTeamA(),
-                    dem.getTeamB()))
-        .toList();
+    return dems.stream().map(DemHeaderResponse::from).toList();
   }
 }
