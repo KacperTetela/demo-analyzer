@@ -1,8 +1,8 @@
 package demoanalyzer.com.legacy.analyzer.clutch;
 
 import demoanalyzer.com.legacy.analyzer.GameDetailsDTO;
-import demoanalyzer.com.legacy.replay.conversion.raw.KillsEvent;
-import demoanalyzer.com.legacy.replay.conversion.raw.RoundsEvent;
+import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
+import demoanalyzer.com.dem.parser.domain.model.raw.Rounds;
 
 import java.util.*;
 
@@ -10,14 +10,14 @@ public class ClutchAnalyzer {
 
 
   public List<ClutchDTO> analyzeClutch(
-      List<KillsEvent> killsEvents, List<RoundsEvent> roundsEvents,GameDetailsDTO gameDetails
+          List<Kills> kills, List<Rounds> rounds, GameDetailsDTO gameDetails
   ) {
 
     // Inicjalizacja listy wynikowej
     List<ClutchDTO> clutches = new ArrayList<>();
 
     // Iteracja po rundach
-    for (RoundsEvent round : roundsEvents) {
+    for (Rounds round : rounds) {
       // boolean clutchAttempt = false;
       String clutchForSide = "";
       String clutcherName = "";
@@ -26,10 +26,10 @@ public class ClutchAnalyzer {
       List<String> victimsT = new ArrayList<>();
       List<String> victimsCT = new ArrayList<>();
 
-      for (KillsEvent kill :
-          killsEvents.stream()
+      for (Kills kill :
+          kills.stream()
               .filter(killsEvent -> killsEvent.roundNum() == round.roundNum())
-              .sorted(Comparator.comparing(KillsEvent::tick))
+              .sorted(Comparator.comparing(Kills::tick))
               .toList()) {
         if (kill.victimSide().equals("CT")) victimsCT.add(kill.victimName());
         else victimsT.add(kill.victimName());
@@ -66,7 +66,7 @@ public class ClutchAnalyzer {
     return names.get(0);
   }
 
-  private boolean didTeamWinRound(RoundsEvent round, List<KillsEvent> killsEvent) {
+  private boolean didTeamWinRound(Rounds round, List<Kills> kills) {
     return false;
   }
 }

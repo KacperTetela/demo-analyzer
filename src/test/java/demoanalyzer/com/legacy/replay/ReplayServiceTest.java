@@ -21,7 +21,7 @@ public class ReplayServiceTest {
         MockitoAnnotations.openMocks(this);
 
         // Wstrzyknięcie mockowanego GameplayDeserializer przez refleksję
-        Field field = DomainReplayService.class.getDeclaredField("gameplayDeserializer");
+        Field field = DomainReplayServiceAdapter.class.getDeclaredField("gameplayDeserializer");
         field.setAccessible(true);
         field.set(replayService, gameplayDeserializer);*//*
 
@@ -31,7 +31,7 @@ public class ReplayServiceTest {
 /*    @Test
     void testGetBasicReplayInfo() {
         // Arrange
-        HeaderEvent headerEvent = new HeaderEvent("Test Map", "Test Server");
+        Header headerEvent = new Header("Test Map", "Test Server");
         replayService.setTestHeaderEvent(headerEvent);
 
         // Act
@@ -46,15 +46,15 @@ public class ReplayServiceTest {
     *//*
 */
 /**
-     * Rozszerzona klasa DomainReplayService dla celów testowych, pozwalająca
+     * Rozszerzona klasa DomainReplayServiceAdapter dla celów testowych, pozwalająca
      * kontrolować zwracane wyniki z HeaderDeserializer
      *//*
 */
 /*
-    private static class TestableReplayService extends DomainReplayService {
-        private HeaderEvent testHeaderEvent;
+    private static class TestableReplayService extends DomainReplayServiceAdapter {
+        private Header testHeaderEvent;
 
-        public void setTestHeaderEvent(HeaderEvent testHeaderEvent) {
+        public void setTestHeaderEvent(Header testHeaderEvent) {
             this.testHeaderEvent = testHeaderEvent;
         }
 
@@ -70,11 +70,11 @@ public class ReplayServiceTest {
 
 
     // Klasy pomocnicze do testów
-    private static class HeaderEvent {
+    private static class Header {
         private final String map_name;
         private final String server_name;
 
-        public HeaderEvent(String map_name, String server_name) {
+        public Header(String map_name, String server_name) {
             this.map_name = map_name;
             this.server_name = server_name;
         }

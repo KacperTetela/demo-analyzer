@@ -1,20 +1,20 @@
 package demoanalyzer.com.legacy.analyzer.trade;
 
-import demoanalyzer.com.legacy.replay.conversion.raw.KillsEvent;
+import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TradeAnalyzer {
-  public List<TradeDTO> analyzeTrade(List<KillsEvent> killsEvents) {
+  public List<TradeDTO> analyzeTrade(List<Kills> kills) {
     List<TradeDTO> trades = new ArrayList<>();
 
-    for (int i = 0; i < killsEvents.size() - 1; i++) {
-      KillsEvent firstKill = killsEvents.get(i);
+    for (int i = 0; i < kills.size() - 1; i++) {
+      Kills firstKill = kills.get(i);
       TradeType tradeType = TradeType.LATE_TRADE;
 
-      for (int j = i + 1; j < killsEvents.size(); j++) {
-        KillsEvent potentialTrade = killsEvents.get(j);
+      for (int j = i + 1; j < kills.size(); j++) {
+        Kills potentialTrade = kills.get(j);
 
         // Jeżeli poza limitem czasu — przerwij pętlę
         if (potentialTrade.tick() - firstKill.tick() > TradeType.LATE_TICK_LIMIT) {

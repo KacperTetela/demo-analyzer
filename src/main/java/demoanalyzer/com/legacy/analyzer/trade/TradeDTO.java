@@ -1,5 +1,5 @@
 package demoanalyzer.com.legacy.analyzer.trade;
 
-import demoanalyzer.com.legacy.replay.conversion.raw.KillsEvent;
+import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
 
-public record TradeDTO(KillsEvent currentKill, KillsEvent tradeKill, TradeType tradeType) {}
+public record TradeDTO(Kills currentKill, Kills tradeKill, TradeType tradeType) {}
