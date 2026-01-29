@@ -95,34 +95,37 @@ public class CsvDeserializer<T> {
    * @throws IOException if an error occurs while reading the file
    * @throws ReflectiveOperationException if an error occurs while creating the objects
    */
-  public List<T> deserialize(String filePath) throws IOException, ReflectiveOperationException {
+  public List<T> deserialize(BufferedReader reader)
+      throws IOException, ReflectiveOperationException {
     List<T> result = new ArrayList<>();
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-      String headerLine = reader.readLine();
-      if (headerLine == null) {
-        throw new IOException("Empty CSV File");
+    // Nie tworzymy tu nowego Readera, korzystamy z przekazanego.
+    // WAŻNE: Nie używamy try-with-resources tutaj, bo nie chcemy zamknąć strumienia ZIP-a!
+
+    String headerLine = reader.readLine();
+    if (headerLine == null) {
+      return result; // Pusty plik
+    }
+
+    String[] headers = headerLine.split(",");
+
+    Map<String, Integer> headerIndexMap = new HashMap<>();
+    for (int i = 0; i < headers.length; i++) {
+      headerIndexMap.put(headers[i].trim().toLowerCase(), i);
+    }
+
+    String line;
+    if (isJavaRecord) {
+      while ((line = reader.readLine()) != null) {
+        // Pomijamy puste linie
+        if (line.trim().isEmpty()) continue;
+        result.add(parseLineForRecord(line, headerIndexMap));
       }
-
-      String[] headers = headerLine.split(",");
-
-      // Mapuj nagłówki CSV do ich indeksów
-      Map<String, Integer> headerIndexMap = new HashMap<>();
-      for (int i = 0; i < headers.length; i++) {
-        headerIndexMap.put(headers[i].trim().toLowerCase(), i);
-      }
-
-      if (isJavaRecord) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          result.add(parseLineForRecord(line, headerIndexMap));
-        }
-      } else {
-        Map<Integer, Field> columnToFieldMap = mapColumnsToFields(headers);
-        String line;
-        while ((line = reader.readLine()) != null) {
-          result.add(parseLineForClass(line, columnToFieldMap));
-        }
+    } else {
+      Map<Integer, Field> columnToFieldMap = mapColumnsToFields(headers);
+      while ((line = reader.readLine()) != null) {
+        if (line.trim().isEmpty()) continue;
+        result.add(parseLineForClass(line, columnToFieldMap));
       }
     }
 
