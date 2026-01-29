@@ -2,7 +2,6 @@ package demoanalyzer.com.legacy.analyzer;
 
 import demoanalyzer.com.dem.parser.domain.model.raw.GameInfo;
 import demoanalyzer.com.dem.parser.infrastructure.GameplayDeserializer;
-import demoanalyzer.com.dem.parser.infrastructure.GameplayEvent;
 import demoanalyzer.com.dem.parser.infrastructure.HeaderDeserializer;
 import demoanalyzer.com.dem.parser.domain.model.header.Header;
 import org.springframework.stereotype.Service;

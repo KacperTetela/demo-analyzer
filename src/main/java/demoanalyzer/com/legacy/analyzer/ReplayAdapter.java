@@ -1,7 +1,6 @@
 package demoanalyzer.com.legacy.analyzer;
 
 import demoanalyzer.com.dem.parser.domain.model.raw.GameInfo;
-import demoanalyzer.com.dem.parser.infrastructure.GameplayEvent;
 
 import java.util.List;
 

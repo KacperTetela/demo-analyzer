@@ -33,7 +33,8 @@ import java.util.zip.ZipInputStream;
 @Component
 @RequiredArgsConstructor
 public class ParserServiceImpl implements ParserService {
-  @Value("${parser.service.url}") // np. https://develop.api.parser.kacpertetela.ddns.net
+
+  @Value("${parser.service.url}")
   private String parserServiceUrl;
 
   private final RestClient.Builder restClientBuilder;
@@ -55,10 +56,9 @@ public class ParserServiceImpl implements ParserService {
           @Override
           public long contentLength() {
             return -1;
-          } // Ważne dla streamowania
+          }
         });
 
-    // 1. Strzał do API
     return restClientBuilder
         .build()
         .post()
@@ -70,13 +70,12 @@ public class ParserServiceImpl implements ParserService {
               if (response.getStatusCode().isError()) {
                 throw new RuntimeException("Parser failed: " + response.getStatusCode());
               }
-              // 2. Przetwarzanie ZIP-a w locie
               return processZipStream(response.getBody());
             });
   }
 
   private CompleteMatchData processZipStream(InputStream zipStream) {
-    // 1. Inicjalizacja list na dane (puste, żeby uniknąć nulli)
+    // Inicjalizacja list
     Header header = null;
     List<Bomb> bombs = new ArrayList<>();
     List<Damages> damages = new ArrayList<>();
@@ -96,70 +95,59 @@ public class ParserServiceImpl implements ParserService {
     try (ZipInputStream zis = new ZipInputStream(zipStream)) {
       ZipEntry entry;
 
-      // 2. Iteracja po plikach w archiwum ZIP
       while ((entry = zis.getNextEntry()) != null) {
         String fileName = entry.getName();
 
-        // Wrapper BufferedReader pozwala czytać liniami bez zamykania głównego strumienia ZIP
-        BufferedReader reader =
-            new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
+        if ("header.json".equals(fileName)) {
+          // POPRAWKA: Czytamy JSON bezpośrednio, ale bezpiecznie.
+          // objectMapper.readValue(zis) mógłby zamknąć strumień.
+          // Ponieważ header jest mały, czytamy go do bajtów, co jest bezpieczne.
+          byte[] jsonBytes = zis.readAllBytes();
+          header = objectMapper.readValue(jsonBytes, Header.class);
 
-        // 3. Rozpoznawanie plików i deserializacja
-        switch (fileName) {
-          case "header.json" -> {
-            // Jackson czyta JSON bezpośrednio
-            header = objectMapper.readValue(zis, Header.class);
+        } else if (fileName.endsWith(".csv")) {
+          // POPRAWKA: Tworzymy BufferedReader TYLKO dla CSV
+          // Dzięki temu nie kradniemy bajtów z 'header.json' w poprzednich iteracjach
+          BufferedReader reader =
+              new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
+
+          switch (fileName) {
+            case "bomb.csv" -> bombs = new CsvDeserializer<>(Bomb.class).deserialize(reader);
+            case "damages.csv" ->
+                damages = new CsvDeserializer<>(Damages.class).deserialize(reader);
+            case "footsteps.csv" ->
+                footsteps = new CsvDeserializer<>(Footsteps.class).deserialize(reader);
+            case "game_info.csv", "gameInfos.csv" ->
+                gameInfos = new CsvDeserializer<>(GameInfo.class).deserialize(reader);
+            case "grenades.csv" ->
+                grenades = new CsvDeserializer<>(Grenades.class).deserialize(reader);
+            case "infernos.csv" ->
+                infernos = new CsvDeserializer<>(Infernos.class).deserialize(reader);
+            case "kills.csv" -> kills = new CsvDeserializer<>(Kills.class).deserialize(reader);
+            case "rounds.csv" -> rounds = new CsvDeserializer<>(Rounds.class).deserialize(reader);
+            case "shots.csv" -> shots = new CsvDeserializer<>(Shots.class).deserialize(reader);
+            case "smokes.csv" -> smokes = new CsvDeserializer<>(Smokes.class).deserialize(reader);
+            case "ticks.csv" -> ticks = new CsvDeserializer<>(Ticks.class).deserialize(reader);
+
+            // Stats
+            case "adr.csv" -> adrs = new CsvDeserializer<>(Adr.class).deserialize(reader);
+            case "kast.csv" -> kasts = new CsvDeserializer<>(Kast.class).deserialize(reader);
+            case "rating.csv" -> ratings = new CsvDeserializer<>(Rating.class).deserialize(reader);
+
+            default -> log.warn("Skipping unknown CSV: {}", fileName);
           }
-          // --- RAW DATA ---
-          case "bomb.csv" -> bombs = new CsvDeserializer<>(Bomb.class).deserialize(reader);
-
-          case "damages.csv" -> damages = new CsvDeserializer<>(Damages.class).deserialize(reader);
-
-          case "footsteps.csv" ->
-              footsteps = new CsvDeserializer<>(Footsteps.class).deserialize(reader);
-
-          // Na screenshocie nie widać pliku game_info.csv, ale klasa GameInfo istnieje.
-          // Zakładam standardową nazwę, jeśli plik przyjdzie.
-          case "game_info.csv", "gameInfos.csv" ->
-              gameInfos = new CsvDeserializer<>(GameInfo.class).deserialize(reader);
-
-          case "grenades.csv" ->
-              grenades = new CsvDeserializer<>(Grenades.class).deserialize(reader);
-
-          case "infernos.csv" ->
-              infernos = new CsvDeserializer<>(Infernos.class).deserialize(reader);
-
-          case "kills.csv" -> kills = new CsvDeserializer<>(Kills.class).deserialize(reader);
-
-          case "rounds.csv" -> rounds = new CsvDeserializer<>(Rounds.class).deserialize(reader);
-
-          case "shots.csv" -> shots = new CsvDeserializer<>(Shots.class).deserialize(reader);
-
-          case "smokes.csv" -> smokes = new CsvDeserializer<>(Smokes.class).deserialize(reader);
-
-          case "ticks.csv" -> ticks = new CsvDeserializer<>(Ticks.class).deserialize(reader);
-
-          // --- STATS DATA ---
-          case "adr.csv" -> adrs = new CsvDeserializer<>(Adr.class).deserialize(reader);
-
-          case "kast.csv" -> kasts = new CsvDeserializer<>(Kast.class).deserialize(reader);
-
-          case "rating.csv" -> ratings = new CsvDeserializer<>(Rating.class).deserialize(reader);
-
-          default -> log.warn("Skipping unknown file in ZIP: {}", fileName);
         }
 
-        zis.closeEntry(); // Zamykamy bieżący wpis w ZIP
+        zis.closeEntry();
       }
     } catch (Exception e) {
-      throw new RuntimeException("Failed to process ZIP stream from parser service", e);
+      throw new RuntimeException("Failed to process ZIP stream", e);
     }
 
     if (header == null) {
-      throw new IllegalStateException("Missing header.json in parser response ZIP!");
+      throw new IllegalStateException("Missing header.json in ZIP!");
     }
 
-    // 4. Zbudowanie i zwrócenie obiektu
     return new CompleteMatchData(
         header, bombs, damages, footsteps, gameInfos, grenades, infernos, kills, rounds, shots,
         smokes, ticks, adrs, kasts, ratings);

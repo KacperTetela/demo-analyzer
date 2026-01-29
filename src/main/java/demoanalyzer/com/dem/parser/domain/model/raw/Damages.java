@@ -1,6 +1,6 @@
 package demoanalyzer.com.dem.parser.domain.model.raw;
 
-import demoanalyzer.com.dem.parser.infrastructure.GameplayEvent;
+import demoanalyzer.com.legacy.analyzer.GameplayEvent;
 
 public record Damages(
     long tick,
