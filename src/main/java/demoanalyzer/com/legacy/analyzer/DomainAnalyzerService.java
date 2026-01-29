@@ -54,9 +54,11 @@ public class DomainAnalyzerService {
   private Team extractTeam(String site, List<Ticks> ticks, String teamName) {
     List<String> players =
         ticks.stream()
-            .filter(ticks -> ticks.side().equalsIgnoreCase(site))
+            .filter(t -> t.side().equalsIgnoreCase(site))
             .map(Ticks::name)
+            .distinct()
             .toList();
+
     return new Team(site.toUpperCase(), players, teamName);
   }
 
@@ -71,7 +73,7 @@ public class DomainAnalyzerService {
     List<Kills> kills = replayAdapter.getGameplayEvents(Kills.class);
     List<Rounds> rounds = replayAdapter.getGameplayEvents(Rounds.class);
 
-    return clutchAnalyzer.analyzeClutch(kills, rounds,getBasicReplayInfo());
+    return clutchAnalyzer.analyzeClutch(kills, rounds, getBasicReplayInfo());
   }
 
   public List<TeamSideWins> getSideWinsInfo() {

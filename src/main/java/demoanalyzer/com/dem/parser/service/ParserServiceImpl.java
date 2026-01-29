@@ -99,15 +99,10 @@ public class ParserServiceImpl implements ParserService {
         String fileName = entry.getName();
 
         if ("header.json".equals(fileName)) {
-          // POPRAWKA: Czytamy JSON bezpośrednio, ale bezpiecznie.
-          // objectMapper.readValue(zis) mógłby zamknąć strumień.
-          // Ponieważ header jest mały, czytamy go do bajtów, co jest bezpieczne.
           byte[] jsonBytes = zis.readAllBytes();
           header = objectMapper.readValue(jsonBytes, Header.class);
 
         } else if (fileName.endsWith(".csv")) {
-          // POPRAWKA: Tworzymy BufferedReader TYLKO dla CSV
-          // Dzięki temu nie kradniemy bajtów z 'header.json' w poprzednich iteracjach
           BufferedReader reader =
               new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
 
