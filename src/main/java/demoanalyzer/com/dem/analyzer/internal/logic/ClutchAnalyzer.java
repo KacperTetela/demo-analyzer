@@ -63,7 +63,7 @@ public class ClutchAnalyzer {
       String side, int roundNum, List<String> deadPlayers, MatchTeams teams) {
     // Pobieramy pełny skład danej strony w tej rundzie
     List<String> allPlayers =
-        new ArrayList<>(teams.getTeamBySideAndRound(side, roundNum).playerNames());
+        new ArrayList<>(teams.getTeamBySideAndRound(side, roundNum).namesOfPlayers());
 
     // Usuwamy martwych
     allPlayers.removeAll(deadPlayers);

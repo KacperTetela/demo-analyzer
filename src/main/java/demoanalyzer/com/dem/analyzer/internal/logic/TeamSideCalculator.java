@@ -38,8 +38,8 @@ public class TeamSideCalculator {
 
     // 2. Tworzymy obiekty team
     // Zakładamy: team A zaczyna jako CT, team B zaczyna jako T (lub odwrotnie, zależy od konwencji)
-    Team teamA = new Team("team A", "CT", new ArrayList<>(startingCT));
-    Team teamB = new Team("team B", "T", new ArrayList<>(startingT));
+    Team teamA = new Team("team A", new ArrayList<>(startingCT), "CT");
+    Team teamB = new Team("team B", new ArrayList<>(startingT), "T");
 
     return new MatchTeams(teamA, teamB);
   }

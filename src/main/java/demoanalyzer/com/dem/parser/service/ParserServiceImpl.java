@@ -34,8 +34,8 @@ import java.util.zip.ZipInputStream;
 @RequiredArgsConstructor
 public class ParserServiceImpl implements ParserService {
 
-  @Value("${parser.service.url}")
-  private String parserServiceUrl;
+  //@Value("${parser.service.url}")
+  private String parserServiceUrl = "https://develop.api.parser.kacpertetela.ddns.net";
 
   private final RestClient.Builder restClientBuilder;
   private final ObjectMapper objectMapper;

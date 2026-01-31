@@ -2,10 +2,7 @@ package demoanalyzer.com.dem.analyzer.internal;
 
 import demoanalyzer.com.dem.analyzer.api.AnalyzerApi;
 import demoanalyzer.com.dem.analyzer.api.dto.AnalysisResult;
-import demoanalyzer.com.dem.analyzer.internal.logic.ClutchAnalyzer;
-import demoanalyzer.com.dem.analyzer.internal.logic.EntryAnalyzer;
-import demoanalyzer.com.dem.analyzer.internal.logic.TeamSideCalculator;
-import demoanalyzer.com.dem.analyzer.internal.logic.TradeAnalyzer;
+import demoanalyzer.com.dem.analyzer.internal.logic.*;
 import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
 import demoanalyzer.com.dem.parser.domain.model.CompleteMatchData;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +16,7 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
   private final EntryAnalyzer entryAnalyzer;
   private final TradeAnalyzer tradeAnalyzer;
   private final ClutchAnalyzer clutchAnalyzer;
-
-  // private final SideWinCalculator sideWinCalculator; // Jeśli potrzebujesz w wyniku
+  private final SideWinCalculator sideWinCalculator;
 
   @Override
   public AnalysisResult analyze(CompleteMatchData rawData) {
@@ -33,6 +29,7 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
 
     // 3. Analizy zależne od Teamów (Clutch, SideWins)
     var clutches = clutchAnalyzer.analyze(rawData.kills(), rawData.rounds(), teams);
+    var side = sideWinCalculator.analyze(teams, rawData.rounds());
 
     // 4. Budowanie wyniku
     // Mapujemy nasz internal.model.team na api.dto.TeamInfo (jeśli takie masz w AnalysisResult)
@@ -43,6 +40,6 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
         entryFrags,
         clutches,
         tradeKills,
-            );
+        side);
   }
 }
