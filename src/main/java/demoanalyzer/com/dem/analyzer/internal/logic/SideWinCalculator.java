@@ -1,7 +1,8 @@
 package demoanalyzer.com.dem.analyzer.internal.logic;
 
-import demoanalyzer.com.dem.analyzer.internal.model.team.MatchTeams;
-import demoanalyzer.com.dem.analyzer.internal.model.team.Team;
+import demoanalyzer.com.dem.analyzer.api.dto.TeamSideWins;
+import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
+import demoanalyzer.com.dem.analyzer.internal.model.Team;
 import demoanalyzer.com.dem.parser.domain.model.raw.Rounds;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,6 @@ import java.util.List;
 public class SideWinCalculator {
 
   // Używamy rekordu wewnętrznego lub DTO z API, tutaj zwracam prostą klasę/rekord
-  public record TeamSideWins(String teamName, int ctWins, int tWins) {}
 
   public List<TeamSideWins> analyze(MatchTeams teams, List<Rounds> rounds) {
     List<TeamSideWins> results = new ArrayList<>();

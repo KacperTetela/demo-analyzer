@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.analyzer.internal.model.trade;
+package demoanalyzer.com.dem.analyzer.api.dto.trade;
 
 
 import demoanalyzer.com.dem.parser.domain.model.raw.Kills;

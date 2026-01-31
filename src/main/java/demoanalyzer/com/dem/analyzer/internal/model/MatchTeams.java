@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.analyzer.internal.model.team;
+package demoanalyzer.com.dem.analyzer.internal.model;
 
 public record MatchTeams(Team teamA, Team teamB) {
 

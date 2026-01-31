@@ -6,7 +6,7 @@ import demoanalyzer.com.dem.analyzer.internal.logic.ClutchAnalyzer;
 import demoanalyzer.com.dem.analyzer.internal.logic.EntryAnalyzer;
 import demoanalyzer.com.dem.analyzer.internal.logic.TeamSideCalculator;
 import demoanalyzer.com.dem.analyzer.internal.logic.TradeAnalyzer;
-import demoanalyzer.com.dem.analyzer.internal.model.team.MatchTeams;
+import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
 import demoanalyzer.com.dem.parser.domain.model.CompleteMatchData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

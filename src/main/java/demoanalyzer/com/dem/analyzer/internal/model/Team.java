@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.analyzer.internal.model.team;
+package demoanalyzer.com.dem.analyzer.internal.model;
 
 import java.util.List;
 

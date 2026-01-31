@@ -1,7 +1,7 @@
 package demoanalyzer.com.dem.analyzer.internal.logic;
 
-import demoanalyzer.com.dem.analyzer.internal.model.Clutch;
-import demoanalyzer.com.dem.analyzer.internal.model.team.MatchTeams;
+import demoanalyzer.com.dem.analyzer.api.dto.Clutch;
+import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
 import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
 import demoanalyzer.com.dem.parser.domain.model.raw.Rounds;
 import org.springframework.stereotype.Component;

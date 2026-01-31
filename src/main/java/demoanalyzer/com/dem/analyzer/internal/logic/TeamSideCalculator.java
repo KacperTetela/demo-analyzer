@@ -1,7 +1,7 @@
 package demoanalyzer.com.dem.analyzer.internal.logic;
 
-import demoanalyzer.com.dem.analyzer.internal.model.team.MatchTeams;
-import demoanalyzer.com.dem.analyzer.internal.model.team.Team;
+import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
+import demoanalyzer.com.dem.analyzer.internal.model.Team;
 import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
 import org.springframework.stereotype.Component;
 
