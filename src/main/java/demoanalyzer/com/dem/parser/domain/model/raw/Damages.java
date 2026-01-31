@@ -1,6 +1,5 @@
 package demoanalyzer.com.dem.parser.domain.model.raw;
 
-import demoanalyzer.com.legacy.analyzer.GameplayEvent;
 
 public record Damages(
     long tick,
@@ -14,4 +13,4 @@ public record Damages(
     int health,
     String hitGroup,
     String weapon)
-    implements GameplayEvent {}
+     {}

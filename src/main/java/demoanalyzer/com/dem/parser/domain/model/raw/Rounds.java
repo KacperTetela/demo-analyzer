@@ -1,6 +1,6 @@
 package demoanalyzer.com.dem.parser.domain.model.raw;
 
-import demoanalyzer.com.legacy.analyzer.GameplayEvent;
+
 
 public record Rounds(
     long start,
@@ -12,4 +12,4 @@ public record Rounds(
     String reason,
     double bombPlant,
     String bombSite)
-    implements GameplayEvent {}
+     {}

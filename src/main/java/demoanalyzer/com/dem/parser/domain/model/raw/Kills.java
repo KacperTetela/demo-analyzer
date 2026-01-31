@@ -1,6 +1,5 @@
 package demoanalyzer.com.dem.parser.domain.model.raw;
 
-import demoanalyzer.com.legacy.analyzer.GameplayEvent;
 
 public record Kills(
     long tick,
@@ -12,7 +11,7 @@ public record Kills(
     String victimName,
     String victimPlace,
     String victimSide)
-    implements GameplayEvent {
+     {
 
   public boolean isTeamKill() {
     if (attackerSide == null || victimSide == null) return false;

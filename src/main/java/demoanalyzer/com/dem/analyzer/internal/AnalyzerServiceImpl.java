@@ -42,6 +42,7 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
         null, // Mapper: teams.teamB() -> TeamInfo
         entryFrags,
         clutches,
-        tradeKills);
+        tradeKills,
+            );
   }
 }
