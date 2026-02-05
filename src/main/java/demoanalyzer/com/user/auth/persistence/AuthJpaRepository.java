@@ -19,7 +19,7 @@ public interface AuthJpaRepository extends JpaRepository<AuthUserEntity, Long> {
 
   boolean existsByEmail(String email);
 
-  void deleteById(Long aLong);
+  void deleteById(Long id);
 
   @Modifying
   @Query("UPDATE AuthUserEntity u SET u.password = :password WHERE u.id = :id")
