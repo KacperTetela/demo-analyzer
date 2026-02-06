@@ -4,9 +4,13 @@ import demoanalyzer.com.dem.analyzer.api.AnalyzerApi;
 import demoanalyzer.com.dem.analyzer.api.dto.AnalysisResult;
 import demoanalyzer.com.dem.analyzer.internal.logic.*;
 import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
+import demoanalyzer.com.dem.analyzer.internal.model.Team;
+import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 import demoanalyzer.com.dem.parser.domain.model.CompleteMatchData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,26 +21,26 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
   private final TradeAnalyzer tradeAnalyzer;
   private final ClutchAnalyzer clutchAnalyzer;
   private final SideWinCalculator sideWinCalculator;
+  private final TeamMapper teamMapper;
 
   @Override
   public AnalysisResult analyze(CompleteMatchData rawData) {
-    // 1. FUNDAMENT: Ustalenie kto jest w jakim teamie
     MatchTeams teams = teamSideCalculator.calculateTeams(rawData.kills());
 
-    // 2. Analizy niezależne
     var entryFrags = entryAnalyzer.analyze(rawData.kills(), rawData.rounds());
     var tradeKills = tradeAnalyzer.analyze(rawData.kills());
-
-    // 3. Analizy zależne od Teamów (Clutch, SideWins)
     var clutches = clutchAnalyzer.analyze(rawData.kills(), rawData.rounds(), teams);
     var side = sideWinCalculator.analyze(teams, rawData.rounds());
 
-    // 4. Budowanie wyniku
-    // Mapujemy nasz internal.model.team na api.dto.TeamInfo (jeśli takie masz w AnalysisResult)
-    // Zakładam tu null dla TeamInfo, bo musiałbyś stworzyć mapper, ale logika jest gotowa.
+    // TODO: Tutaj musisz pobrać prawdziwy wynik meczu.
+    // Zazwyczaj wynika on z liczby wygranych rund w 'side' lub z headera.
+    // Na razie wpisuję 0, żeby kod się kompilował.
+    int scoreTeamA = 0;
+    int scoreTeamB = 0;
+
     return new AnalysisResult(
-        null, // Mapper: teams.teamA() -> TeamInfo
-        null, // Mapper: teams.teamB() -> TeamInfo
+        teamMapper.mapToTeamInfo(teams.teamA(), scoreTeamA), // Mapujemy graczy 1-5
+        teamMapper.mapToTeamInfo(teams.teamB(), scoreTeamB), // Mapujemy graczy 1-5
         entryFrags,
         clutches,
         tradeKills,
