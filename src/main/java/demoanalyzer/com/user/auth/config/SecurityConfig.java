@@ -57,16 +57,13 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // Zezwól na frontend (Vite/React zazwyczaj na 5173)
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    configuration.setAllowedOrigins(List.of(
+            "http://localhost:5173",
+            "https://develop.demoanalyzer.kacpertetela.ddns.net"
+    ));
 
-    // Zezwól na metody HTTP
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-    // Zezwól na wszystkie nagłówki (w tym Authorization i Content-Type)
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(List.of("*"));
-
-    // Zezwól na przesyłanie ciasteczek/tokenów
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
