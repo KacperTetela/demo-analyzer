@@ -31,4 +31,9 @@ public class DemRepositoryAdapter implements DemRepository {
   public List<Dem> findAll(Long ownerId) {
     return demJpaRepository.findAllForOwner(ownerId).stream().map(mapper::toDomain).toList();
   }
+
+  @Override
+  public void deleteById(Long id) {
+    demJpaRepository.deleteById(id);
+  }
 }

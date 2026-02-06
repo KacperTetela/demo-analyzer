@@ -28,49 +28,44 @@ public class DemServiceImpl implements DemService {
   private final DemProcessingService demProcessingService;
 
   @Override
-  @Transactional // Transakcja tylko dla zapisu początkowego stanu
+  // USUNIĘTO @Transactional - dzięki temu save() robi commit natychmiast
+  // i wątek asynchroniczny będzie widział rekord w bazie.
   public Dem handleDemFile(MultipartFile multipartFile, Long ownerId) {
-    log.info(
-        "Request received. Creating DB entry for file: {}", multipartFile.getOriginalFilename());
+    log.info("Request received. Creating DB entry for file: {}", multipartFile.getOriginalFilename());
 
-    // 1. Zapisz wstępny rekord w bazie (Status: PENDING/PROCESSING)
-    Dem dem =
-        Dem.builder()
-            .metadata(
-                new Metadata(ownerId)) // Upewnij się, że domyślny status w Metadata to PENDING
+    // 1. Zapisz wstępny rekord w bazie
+    // Repozytorium samo w sobie jest transakcyjne, więc rekord pojawi się w bazie od razu
+    Dem dem = Dem.builder()
+            .metadata(new Metadata(ownerId))
             .build();
 
     Dem savedDem = demRepository.save(dem);
 
-    // 2. Zapisz MultipartFile do pliku tymczasowego na dysku
-    // Jest to konieczne, bo MultipartFile "ginie" po zakończeniu tego requestu
+    // 2. Zapisz plik na dysk
     try {
       File tempFile = createTempFile(multipartFile);
 
-      // 3. Zleć przetwarzanie w tle (metoda @Async)
-      // Przekazujemy ID rekordu i fizyczny plik
+      // 3. Zleć przetwarzanie w tle
+      // Teraz wątek w tle na 100% znajdzie ID, bo zostało już zacommitowane wyżej
       demProcessingService.processDemo(savedDem.getId(), tempFile);
 
     } catch (IOException e) {
       log.error("Failed to save temporary file", e);
+      // Opcjonalnie: posprzątaj rekord z bazy jeśli zapis pliku się nie udał
+      demRepository.deleteById(savedDem.getId());
       throw new RuntimeException("Internal storage error", e);
     }
 
     log.info("Immediate response: Returning ID {} to client.", savedDem.getId());
-
-    // 4. Zwróć obiekt z ID natychmiast do kontrolera
     return savedDem;
   }
 
-  // Helper do zapisu pliku tymczasowego
   private File createTempFile(MultipartFile multipartFile) throws IOException {
     String originalName = multipartFile.getOriginalFilename();
-    String extension =
-        originalName != null && originalName.contains(".")
+    String extension = originalName != null && originalName.contains(".")
             ? originalName.substring(originalName.lastIndexOf("."))
             : ".dem";
 
-    // Tworzy plik w katalogu tymczasowym systemu (/tmp lub C:\Users\...\AppData\Local\Temp)
     Path tempPath = Files.createTempFile("dem_upload_" + UUID.randomUUID(), extension);
     File tempFile = tempPath.toFile();
 

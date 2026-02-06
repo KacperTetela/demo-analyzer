@@ -11,4 +11,6 @@ public interface DemRepository {
   Optional<Dem> findById(Long id);
 
   List<Dem> findAll(Long ownerId);
+
+  void deleteById(Long id);
 }
