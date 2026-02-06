@@ -1,6 +1,7 @@
 package demoanalyzer.com.user.auth.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,10 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthFilter;
 
+  // Wstrzykujemy wartość z properties/env
+  @Value("${cors.allowed.origins}")
+  private String allowedOrigins;
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -31,36 +36,27 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        // 1. WŁĄCZENIE CORS W SECURITY (To jest kluczowe!)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(
-            auth ->
-                auth
-                    // Endpointy autoryzacji dostępne dla każdego
-                    .requestMatchers("/api/auth/**")
-                    .permitAll()
-                    // SWAGGER (Opcjonalnie, jeśli używasz)
-                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-                    .permitAll()
-                    // Reszta wymaga logowania
-                    .anyRequest()
-                    .authenticated())
-        .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(
+                    auth ->
+                            auth
+                                    .requestMatchers("/api/auth/**").permitAll()
+                                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                    .anyRequest().authenticated())
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
 
-  // 2. DEFINICJA REGUŁ CORS
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "https://develop.demoanalyzer.kacpertetela.ddns.net"
-    ));
+    // DZIELIMY STRING PO PRZECINKU NA LISTĘ
+    // Jeśli w env masz: "http://a.com,http://b.com", to tu zrobi się lista 2 elementów.
+    configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
 
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(List.of("*"));
