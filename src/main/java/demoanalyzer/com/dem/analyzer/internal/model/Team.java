@@ -2,7 +2,7 @@ package demoanalyzer.com.dem.analyzer.internal.model;
 
 import java.util.List;
 
-public record Team(String startingSide, List<String> namesOfPlayers, String name) {
+public record Team(String startingSide, List<String> namesOfPlayers, String name, int score) {
 
   public String getSideForRound(int roundNum) {
     // CS2 MR12 (zmiana stron po 12 rundach)

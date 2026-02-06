@@ -8,17 +8,17 @@ import java.util.List;
 @Component
 public class TeamMapper {
 
-    public TeamInfo mapToTeamInfo(Team internalTeam, int score) {
+    // Metoda przyjmuje teraz TYLKO Team internalTeam
+    public TeamInfo mapToTeamInfo(Team internalTeam) {
         List<String> p = internalTeam.namesOfPlayers();
 
-        // Bezpieczne pobieranie graczy (zabezpieczenie gdyby było < 5 graczy)
         return new TeamInfo(
                 getPlayer(p, 0),
                 getPlayer(p, 1),
                 getPlayer(p, 2),
                 getPlayer(p, 3),
                 getPlayer(p, 4),
-                score
+                internalTeam.score() // <--- Pobieramy wynik bezpośrednio z Teamu
         );
     }
 
@@ -26,6 +26,6 @@ public class TeamMapper {
         if (players != null && players.size() > index) {
             return players.get(index);
         }
-        return "Bot/Unknown"; // Wartość domyślna, jeśli brakuje gracza
+        return "Bot/Unknown";
     }
 }

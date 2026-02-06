@@ -25,7 +25,7 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
 
   @Override
   public AnalysisResult analyze(CompleteMatchData rawData) {
-    MatchTeams teams = teamSideCalculator.calculateTeams(rawData.kills());
+    MatchTeams teams = teamSideCalculator.calculateTeams(rawData.kills(), rawData.rounds());
 
     var entryFrags = entryAnalyzer.analyze(rawData.kills(), rawData.rounds());
     var tradeKills = tradeAnalyzer.analyze(rawData.kills());
@@ -39,8 +39,8 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
     int scoreTeamB = 0;
 
     return new AnalysisResult(
-        teamMapper.mapToTeamInfo(teams.teamA(), scoreTeamA), // Mapujemy graczy 1-5
-        teamMapper.mapToTeamInfo(teams.teamB(), scoreTeamB), // Mapujemy graczy 1-5
+        teamMapper.mapToTeamInfo(teams.teamA()), // Czysto!
+        teamMapper.mapToTeamInfo(teams.teamB()), // Czysto!
         entryFrags,
         clutches,
         tradeKills,
