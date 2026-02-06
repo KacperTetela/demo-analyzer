@@ -1,5 +1,7 @@
 package demoanalyzer.com.dem.core.service;
 
+import demoanalyzer.com.dem.analyzer.api.AnalyzerApi;
+import demoanalyzer.com.dem.analyzer.api.dto.AnalysisResult;
 import demoanalyzer.com.dem.core.domain.model.Dem;
 import demoanalyzer.com.dem.core.domain.model.header.Header;
 import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
@@ -25,6 +27,7 @@ public class DemProcessingService {
   private final DemRepository demRepository;
   private final ParserService parserService;
   private final StatsMapper statsMapper;
+  private final AnalyzerApi analyzer;
 
   @Async // Ta metoda wykona się w osobnym wątku
   @Transactional
@@ -53,13 +56,14 @@ public class DemProcessingService {
       List<StatsRating> statsRating =
           matchData.ratings().stream().map(statsMapper::mapToStatsRating).toList();
 
+      AnalysisResult analysisResult = analyzer.analyze(matchData);
+
       // Aktualizacja encji
       Dem completedDem =
           dem.toBuilder()
-              .header(
-                  new Header(
-                      matchData.header().map_name(),
-                      matchData.header().server_name())) // Przykład mapowania headera
+              .header(new Header(matchData.header().map_name(), matchData.header().server_name()))
+              .teamA(analysisResult.teamA())
+              .teamB(analysisResult.teamB()) // Przykład mapowania headera
               .statsAdr(statsAdr)
               .statsKast(statsKast)
               .statsRating(statsRating)
