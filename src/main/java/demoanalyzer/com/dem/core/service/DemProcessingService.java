@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -20,38 +22,46 @@ public class DemProcessingService {
   private final DemRepository demRepository;
   private final ParserService parserService;
 
-  @Async
+  @Async // Ta metoda wykona się w osobnym wątku
   @Transactional
-  public void processDemo(Long demId, MultipartFile file) {
-    log.info("Starting processing for demo ID: {}", demId);
+  public void processDemo(Long demId, File tempFile) {
+    log.info("BACKGROUND: Starting processing for demo ID: {}", demId);
 
-    // find Dem entity based on demId
-    Dem dem =
-        demRepository
-            .findById(demId)
+    // Znajdź encję, która została utworzona wcześniej
+    Dem dem = demRepository.findById(demId)
             .orElseThrow(() -> new IllegalStateException("Dem not found: " + demId));
 
     try {
+      // WAŻNE: Parser musi umieć obsłużyć java.io.File, a nie tylko MultipartFile.
+      // Jeśli twój parser wymaga MultipartFile, musisz go lekko przerobić,
+      // żeby przyjmował File lub InputStream. Zakładam tutaj, że parserService.parse(File) jest możliwe.
+      CompleteMatchData matchData = parserService.parse(tempFile);
 
-      // Parse the demo file
-      CompleteMatchData matchData = parserService.parse(file);
+      // Tworzenie nagłówka
+      Header domainHeader = new Header(matchData.header().map_name(), matchData.header().server_name());
 
-      // Create Header from parsed data
-      Header domainHeader =
-          new Header(matchData.header().map_name(), matchData.header().server_name());
+      // Aktualizacja encji
+      Dem completedDem = dem.toBuilder()
+              .header(domainHeader)
+              .build();
 
-      // Update encji
-      Dem completedDem = dem.toBuilder().header(domainHeader).build();
-
-      completedDem.getMetadata().markAsFinished();
+      completedDem.getMetadata().markAsFinished(); // Ustaw status na DONE
       demRepository.save(completedDem);
 
-      log.info("Demo saved successfully.");
+      log.info("BACKGROUND: Demo processed and saved successfully.");
 
     } catch (Exception e) {
-      log.error("Processing failed", e);
-      dem.getMetadata().markAsFailed();
+      log.error("BACKGROUND: Processing failed", e);
+      dem.getMetadata().markAsFailed(); // Ustaw status na ERROR
       demRepository.save(dem);
+    } finally {
+      // Sprzątanie pliku tymczasowego z dysku serwera
+      if (tempFile != null && tempFile.exists()) {
+        boolean deleted = tempFile.delete();
+        if (!deleted) {
+          log.warn("Could not delete temporary file: {}", tempFile.getAbsolutePath());
+        }
+      }
     }
   }
 }

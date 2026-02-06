@@ -12,15 +12,15 @@ import demoanalyzer.com.dem.parser.infrastructure.CsvDeserializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -41,23 +41,15 @@ public class ParserServiceImpl implements ParserService {
   private final ObjectMapper objectMapper;
 
   @Override
-  public CompleteMatchData parse(MultipartFile file) {
+  public CompleteMatchData parse(File file) {
     log.info("Sending demo to parser microservice: {}", parserServiceUrl);
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add(
-        "file",
-        new InputStreamResource(file) {
-          @Override
-          public String getFilename() {
-            return "demo.dem";
-          }
 
-          @Override
-          public long contentLength() {
-            return -1;
-          }
-        });
+    // --- POPRAWKA ---
+    // Używamy FileSystemResource zamiast InputStreamResource.
+    // To automatycznie obsłuży plik 'file' (otworzy strumień, ustawi nazwę i rozmiar).
+    body.add("file", new FileSystemResource(file));
 
     return restClientBuilder
         .build()
@@ -97,12 +89,22 @@ public class ParserServiceImpl implements ParserService {
 
       while ((entry = zis.getNextEntry()) != null) {
         String fileName = entry.getName();
+        // Ignorujemy katalogi w ZIPie, interesują nas tylko pliki
+        if (entry.isDirectory()) {
+          zis.closeEntry();
+          continue;
+        }
 
         if ("header.json".equals(fileName)) {
+          // WAŻNE: Nie zamykamy strumienia 'zis' wewnątrz readValue,
+          // objectMapper domyślnie może próbować to zrobić.
+          // Tutaj readAllBytes jest bezpieczne dla małych plików JSON.
           byte[] jsonBytes = zis.readAllBytes();
           header = objectMapper.readValue(jsonBytes, Header.class);
 
         } else if (fileName.endsWith(".csv")) {
+          // Używamy wrapper'a, który nie zamknie głównego strumienia ZIP po zakończeniu czytania
+          // CSV
           BufferedReader reader =
               new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
 
