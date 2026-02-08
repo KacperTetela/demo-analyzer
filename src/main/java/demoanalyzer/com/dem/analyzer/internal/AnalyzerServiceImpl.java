@@ -2,10 +2,12 @@ package demoanalyzer.com.dem.analyzer.internal;
 
 import demoanalyzer.com.dem.analyzer.api.AnalyzerApi;
 import demoanalyzer.com.dem.analyzer.api.dto.AnalysisResult;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Clutch;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Entry;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.TeamSideWins;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.trade.Trade;
 import demoanalyzer.com.dem.analyzer.internal.logic.*;
 import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
-import demoanalyzer.com.dem.analyzer.internal.model.Team;
-import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 import demoanalyzer.com.dem.parser.domain.model.CompleteMatchData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,25 +27,31 @@ public class AnalyzerServiceImpl implements AnalyzerApi {
 
   @Override
   public AnalysisResult analyze(CompleteMatchData rawData) {
+    // 1. Najpierw musimy ustalić kto jest kim i jaki jest wynik (TeamSideCalculator)
+    // To jest KROK KRYTYCZNY - musi być pierwszy.
     MatchTeams teams = teamSideCalculator.calculateTeams(rawData.kills(), rawData.rounds());
 
-    var entryFrags = entryAnalyzer.analyze(rawData.kills(), rawData.rounds());
-    var tradeKills = tradeAnalyzer.analyze(rawData.kills());
-    var clutches = clutchAnalyzer.analyze(rawData.kills(), rawData.rounds(), teams);
-    var side = sideWinCalculator.analyze(teams, rawData.rounds());
+    // 2. Analiza Entry Fragów (Niezależna od Teams, zależy tylko od Kills i Rounds)
+    List<Entry> entryFrags = entryAnalyzer.analyze(rawData.kills(), rawData.rounds());
 
-    // TODO: Tutaj musisz pobrać prawdziwy wynik meczu.
-    // Zazwyczaj wynika on z liczby wygranych rund w 'side' lub z headera.
-    // Na razie wpisuję 0, żeby kod się kompilował.
-    int scoreTeamA = 0;
-    int scoreTeamB = 0;
+    // 3. Analiza Trade Killi (Niezależna, zależy tylko od Kills)
+    List<Trade> tradeKills = tradeAnalyzer.analyze(rawData.kills());
 
+    // 4. Analiza Clutchy (Zależy od Kills, Rounds ORAZ Teams - bo musimy wiedzieć kto jest w jakim
+    // teamie)
+    List<Clutch> clutches = clutchAnalyzer.analyze(rawData.kills(), rawData.rounds(), teams);
+
+    // 5. Analiza stron (CT/T wins) (Zależy od Teams i Rounds)
+    List<TeamSideWins> sideWins = sideWinCalculator.analyze(teams, rawData.rounds());
+
+    // 6. Mapowanie i zwracanie wyniku
+    // Używamy mappera, aby zamienić wewnętrzny obiekt Team (z logiką) na proste DTO TeamInfo
     return new AnalysisResult(
-        teamMapper.mapToTeamInfo(teams.teamA()), // Czysto!
-        teamMapper.mapToTeamInfo(teams.teamB()), // Czysto!
+        teamMapper.mapToTeamInfo(teams.teamA()),
+        teamMapper.mapToTeamInfo(teams.teamB()),
         entryFrags,
         clutches,
         tradeKills,
-        side);
+        sideWins);
   }
 }

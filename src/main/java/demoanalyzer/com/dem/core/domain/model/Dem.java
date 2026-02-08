@@ -1,10 +1,14 @@
 package demoanalyzer.com.dem.core.domain.model;
 
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Clutch;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Entry;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.TeamSideWins;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.trade.Trade;
 import demoanalyzer.com.dem.core.domain.exception.InvalidDemDomainException;
 import demoanalyzer.com.dem.core.domain.model.header.Header;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsKast;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsRating;
+import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsAdr;
+import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsKast;
+import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsRating;
 import demoanalyzer.com.dem.core.domain.model.metadata.Metadata;
 import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 
@@ -18,6 +22,11 @@ public class Dem {
   private final Header header;
   private final TeamInfo teamA;
   private final TeamInfo teamB;
+  private final List<Entry> entryFrags;
+  private final List<Clutch> clutches;
+  private final List<Trade> tradeKills;
+  private final List<TeamSideWins> sideWins;
+
   private final List<StatsAdr> statsAdr;
   private final List<StatsKast> statsKast;
   private final List<StatsRating> statsRating;
@@ -28,6 +37,12 @@ public class Dem {
     this.header = builder.header;
     this.teamA = builder.teamA;
     this.teamB = builder.teamB;
+
+    this.entryFrags = builder.entryFrags != null ? builder.entryFrags : new ArrayList<>();
+    this.clutches = builder.clutches != null ? builder.clutches : new ArrayList<>();
+    this.tradeKills = builder.tradeKills != null ? builder.tradeKills : new ArrayList<>();
+    this.sideWins = builder.sideWins != null ? builder.sideWins : new ArrayList<>();
+
     // List protection: if builder is null, we create an empty list
     this.statsAdr = builder.statsAdr != null ? builder.statsAdr : new ArrayList<>();
     this.statsKast = builder.statsKast != null ? builder.statsKast : new ArrayList<>();
@@ -54,6 +69,22 @@ public class Dem {
     return teamB;
   }
 
+  public List<Entry> getEntryFrags() {
+    return new ArrayList<>(entryFrags);
+  }
+
+  public List<Clutch> getClutches() {
+    return new ArrayList<>(clutches);
+  }
+
+  public List<Trade> getTradeKills() {
+    return new ArrayList<>(tradeKills);
+  }
+
+  public List<TeamSideWins> getSideWins() {
+    return new ArrayList<>(sideWins);
+  }
+
   public List<StatsAdr> getStatsAdr() {
     return new ArrayList<>(statsAdr);
   }
@@ -73,6 +104,10 @@ public class Dem {
         .header(this.header)
         .teamA(this.teamA)
         .teamB(this.teamB)
+        .entryFrags(this.entryFrags)
+        .clutches(this.clutches)
+        .tradeKills(this.tradeKills)
+        .sideWins(this.sideWins)
         .statsAdr(this.statsAdr)
         .statsKast(this.statsKast)
         .statsRating(this.statsRating);
@@ -88,6 +123,10 @@ public class Dem {
     private Header header;
     private TeamInfo teamA;
     private TeamInfo teamB;
+    private List<Entry> entryFrags = new ArrayList<>();
+    private List<Clutch> clutches = new ArrayList<>();
+    private List<Trade> tradeKills = new ArrayList<>();
+    private List<TeamSideWins> sideWins = new ArrayList<>();
     // List protection: if builder is null, we create an empty list
     private List<StatsAdr> statsAdr = new ArrayList<>();
     private List<StatsKast> statsKast = new ArrayList<>();
@@ -115,6 +154,26 @@ public class Dem {
 
     public Builder teamB(TeamInfo teamB) {
       this.teamB = teamB;
+      return this;
+    }
+
+    public Builder entryFrags(List<Entry> entryFrags) {
+      this.entryFrags = entryFrags;
+      return this;
+    }
+
+    public Builder clutches(List<Clutch> clutches) {
+      this.clutches = clutches;
+      return this;
+    }
+
+    public Builder tradeKills(List<Trade> tradeKills) {
+      this.tradeKills = tradeKills;
+      return this;
+    }
+
+    public Builder sideWins(List<TeamSideWins> sideWins) {
+      this.sideWins = sideWins;
       return this;
     }
 

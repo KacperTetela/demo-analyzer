@@ -1,6 +1,6 @@
 package demoanalyzer.com.dem.analyzer.internal.logic;
 
-import demoanalyzer.com.dem.analyzer.api.dto.Entry;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Entry;
 import demoanalyzer.com.dem.parser.domain.model.raw.Kills;
 import demoanalyzer.com.dem.parser.domain.model.raw.Rounds;
 import org.springframework.stereotype.Component;

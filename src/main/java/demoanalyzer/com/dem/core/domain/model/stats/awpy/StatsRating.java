@@ -1,4 +1,4 @@
-package demoanalyzer.com.dem.core.domain.model.stats;
+package demoanalyzer.com.dem.core.domain.model.stats.awpy;
 
 public record StatsRating(
     String name, Long steamId, Side side, Integer nRounds, Double impact, Double rating) {}

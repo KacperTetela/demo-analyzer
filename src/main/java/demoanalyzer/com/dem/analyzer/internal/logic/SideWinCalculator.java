@@ -1,6 +1,6 @@
 package demoanalyzer.com.dem.analyzer.internal.logic;
 
-import demoanalyzer.com.dem.analyzer.api.dto.TeamSideWins;
+import demoanalyzer.com.dem.core.domain.model.stats.analyzer.TeamSideWins;
 import demoanalyzer.com.dem.analyzer.internal.model.MatchTeams;
 import demoanalyzer.com.dem.analyzer.internal.model.Team;
 import demoanalyzer.com.dem.parser.domain.model.raw.Rounds;
