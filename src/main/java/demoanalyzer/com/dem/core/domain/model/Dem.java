@@ -1,14 +1,15 @@
 package demoanalyzer.com.dem.core.domain.model;
 
-import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Clutch;
-import demoanalyzer.com.dem.core.domain.model.stats.analyzer.Entry;
-import demoanalyzer.com.dem.core.domain.model.stats.analyzer.TeamSideWins;
-import demoanalyzer.com.dem.core.domain.model.stats.analyzer.trade.Trade;
+import demoanalyzer.com.dem.analyzer.api.model.Clutch;
+import demoanalyzer.com.dem.analyzer.api.model.Entry;
+import demoanalyzer.com.dem.analyzer.api.model.PlayerStats;
+import demoanalyzer.com.dem.analyzer.api.model.TeamSideWins;
+import demoanalyzer.com.dem.analyzer.api.model.trade.Trade;
 import demoanalyzer.com.dem.core.domain.exception.InvalidDemDomainException;
 import demoanalyzer.com.dem.core.domain.model.header.Header;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsAdr;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsKast;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsRating;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsKast;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsRating;
 import demoanalyzer.com.dem.core.domain.model.metadata.Metadata;
 import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 
@@ -22,11 +23,12 @@ public class Dem {
   private final Header header;
   private final TeamInfo teamA;
   private final TeamInfo teamB;
-  private final List<Entry> entryFrags;
-  private final List<Clutch> clutches;
-  private final List<Trade> tradeKills;
+
+  // --- GLÓWNE STATYSTYKI (Nowe) ---
+  private final List<PlayerStats> playerStats;
   private final List<TeamSideWins> sideWins;
 
+  // --- Statystyki szczegółowe (z parsera - opcjonalnie, jeśli nadal chcesz je trzymać osobno) ---
   private final List<StatsAdr> statsAdr;
   private final List<StatsKast> statsKast;
   private final List<StatsRating> statsRating;
@@ -38,79 +40,40 @@ public class Dem {
     this.teamA = builder.teamA;
     this.teamB = builder.teamB;
 
-    this.entryFrags = builder.entryFrags != null ? builder.entryFrags : new ArrayList<>();
-    this.clutches = builder.clutches != null ? builder.clutches : new ArrayList<>();
-    this.tradeKills = builder.tradeKills != null ? builder.tradeKills : new ArrayList<>();
+    this.playerStats = builder.playerStats != null ? builder.playerStats : new ArrayList<>();
     this.sideWins = builder.sideWins != null ? builder.sideWins : new ArrayList<>();
 
-    // List protection: if builder is null, we create an empty list
     this.statsAdr = builder.statsAdr != null ? builder.statsAdr : new ArrayList<>();
     this.statsKast = builder.statsKast != null ? builder.statsKast : new ArrayList<>();
     this.statsRating = builder.statsRating != null ? builder.statsRating : new ArrayList<>();
   }
 
-  public Long getId() {
-    return id;
-  }
+  // Gettery
+  public Long getId() { return id; }
+  public Metadata getMetadata() { return metadata; }
+  public Header getHeader() { return header; }
+  public TeamInfo getTeamA() { return teamA; }
+  public TeamInfo getTeamB() { return teamB; }
 
-  public Metadata getMetadata() {
-    return metadata;
-  }
+  public List<PlayerStats> getPlayerStats() { return new ArrayList<>(playerStats); }
+  public List<TeamSideWins> getSideWins() { return new ArrayList<>(sideWins); }
 
-  public Header getHeader() {
-    return header;
-  }
-
-  public TeamInfo getTeamA() {
-    return teamA;
-  }
-
-  public TeamInfo getTeamB() {
-    return teamB;
-  }
-
-  public List<Entry> getEntryFrags() {
-    return new ArrayList<>(entryFrags);
-  }
-
-  public List<Clutch> getClutches() {
-    return new ArrayList<>(clutches);
-  }
-
-  public List<Trade> getTradeKills() {
-    return new ArrayList<>(tradeKills);
-  }
-
-  public List<TeamSideWins> getSideWins() {
-    return new ArrayList<>(sideWins);
-  }
-
-  public List<StatsAdr> getStatsAdr() {
-    return new ArrayList<>(statsAdr);
-  }
-
-  public List<StatsKast> getStatsKast() {
-    return new ArrayList<>(statsKast);
-  }
-
-  public List<StatsRating> getStatsRating() {
-    return new ArrayList<>(statsRating);
-  }
+  public List<StatsAdr> getStatsAdr() { return new ArrayList<>(statsAdr); }
+  public List<StatsKast> getStatsKast() { return new ArrayList<>(statsKast); }
+  public List<StatsRating> getStatsRating() { return new ArrayList<>(statsRating); }
 
   public Builder toBuilder() {
     return new Builder()
-        .id(this.id)
-        .metadata(this.metadata)
-        .header(this.header)
-        .teamA(this.teamA)
-        .teamB(this.teamB)
-        .entryFrags(this.entryFrags)
-        .clutches(this.clutches)
-        .tradeKills(this.tradeKills)
-        .sideWins(this.sideWins)
-        .statsAdr(this.statsAdr)
-        .statsKast(this.statsKast)
-        .statsRating(this.statsRating);
+            .id(this.id)
+            .metadata(this.metadata)
+            .header(this.header)
+            .teamA(this.teamA)
+            .teamB(this.teamB)
+            .playerStats(this.playerStats)
+            .sideWins(this.sideWins)
+            .statsAdr(this.statsAdr)
+            .statsKast(this.statsKast)
+            .statsRating(this.statsRating);
   }
 
   public static Builder builder() {
@@ -123,84 +86,29 @@ public class Dem {
     private Header header;
     private TeamInfo teamA;
     private TeamInfo teamB;
-    private List<Entry> entryFrags = new ArrayList<>();
-    private List<Clutch> clutches = new ArrayList<>();
-    private List<Trade> tradeKills = new ArrayList<>();
+
+    private List<PlayerStats> playerStats = new ArrayList<>();
     private List<TeamSideWins> sideWins = new ArrayList<>();
-    // List protection: if builder is null, we create an empty list
+
     private List<StatsAdr> statsAdr = new ArrayList<>();
     private List<StatsKast> statsKast = new ArrayList<>();
     private List<StatsRating> statsRating = new ArrayList<>();
 
-    public Builder id(Long id) {
-      this.id = id;
-      return this;
-    }
+    public Builder id(Long id) { this.id = id; return this; }
+    public Builder metadata(Metadata metadata) { this.metadata = metadata; return this; }
+    public Builder header(Header header) { this.header = header; return this; }
+    public Builder teamA(TeamInfo teamA) { this.teamA = teamA; return this; }
+    public Builder teamB(TeamInfo teamB) { this.teamB = teamB; return this; }
 
-    public Builder metadata(Metadata metadata) {
-      this.metadata = metadata;
-      return this;
-    }
+    public Builder playerStats(List<PlayerStats> playerStats) { this.playerStats = playerStats; return this; }
+    public Builder sideWins(List<TeamSideWins> sideWins) { this.sideWins = sideWins; return this; }
 
-    public Builder header(Header header) {
-      this.header = header;
-      return this;
-    }
-
-    public Builder teamA(TeamInfo teamA) {
-      this.teamA = teamA;
-      return this;
-    }
-
-    public Builder teamB(TeamInfo teamB) {
-      this.teamB = teamB;
-      return this;
-    }
-
-    public Builder entryFrags(List<Entry> entryFrags) {
-      this.entryFrags = entryFrags;
-      return this;
-    }
-
-    public Builder clutches(List<Clutch> clutches) {
-      this.clutches = clutches;
-      return this;
-    }
-
-    public Builder tradeKills(List<Trade> tradeKills) {
-      this.tradeKills = tradeKills;
-      return this;
-    }
-
-    public Builder sideWins(List<TeamSideWins> sideWins) {
-      this.sideWins = sideWins;
-      return this;
-    }
-
-    public Builder statsAdr(List<StatsAdr> statsAdr) {
-      this.statsAdr = statsAdr;
-      return this;
-    }
-
-    public Builder statsKast(List<StatsKast> statsKast) {
-      this.statsKast = statsKast;
-      return this;
-    }
-
-    public Builder statsRating(List<StatsRating> statsRating) {
-      this.statsRating = statsRating;
-      return this;
-    }
+    public Builder statsAdr(List<StatsAdr> statsAdr) { this.statsAdr = statsAdr; return this; }
+    public Builder statsKast(List<StatsKast> statsKast) { this.statsKast = statsKast; return this; }
+    public Builder statsRating(List<StatsRating> statsRating) { this.statsRating = statsRating; return this; }
 
     public Dem build() {
-      if (this.metadata == null) {
-        throw new InvalidDemDomainException("Dem cannot be created without Metadata.");
-      }
-
-      if (this.metadata.getOwnerId() == null) {
-        throw new InvalidDemDomainException("Dem must belong to a valid Owner (ownerId is null).");
-      }
-
+      if (this.metadata == null) throw new InvalidDemDomainException("Metadata required");
       return new Dem(this);
     }
   }

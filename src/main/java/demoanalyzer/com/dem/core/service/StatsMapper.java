@@ -1,9 +1,9 @@
 package demoanalyzer.com.dem.core.service;
 
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.Side;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsAdr;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsKast;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsRating;
+import demoanalyzer.com.dem.core.domain.model.stats.Side;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsKast;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsRating;
 import demoanalyzer.com.dem.parser.domain.model.stats.Adr;
 import demoanalyzer.com.dem.parser.domain.model.stats.Kast;
 import demoanalyzer.com.dem.parser.domain.model.stats.Rating;

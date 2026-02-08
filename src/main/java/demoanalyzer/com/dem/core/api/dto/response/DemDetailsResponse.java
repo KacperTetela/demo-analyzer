@@ -1,9 +1,11 @@
 package demoanalyzer.com.dem.core.api.dto.response;
 
+import demoanalyzer.com.dem.analyzer.api.model.PlayerStats;
+import demoanalyzer.com.dem.analyzer.api.model.TeamSideWins;
 import demoanalyzer.com.dem.core.domain.model.Dem;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsAdr;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsKast;
-import demoanalyzer.com.dem.core.domain.model.stats.awpy.StatsRating;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsKast;
+import demoanalyzer.com.dem.core.domain.model.stats.StatsRating;
 import demoanalyzer.com.dem.core.domain.model.metadata.AnalysisStatus;
 import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 
@@ -13,28 +15,31 @@ import java.util.List;
 public record DemDetailsResponse(
     long demId,
     Instant createdAt,
-    Instant finishedAt,
     AnalysisStatus status,
     String mapName,
     String serverName,
+
+    // Zespoły i wynik
     TeamInfo teamA,
     TeamInfo teamB,
-    List<StatsAdr> statsAdr,
-    List<StatsKast> statsKast,
-    List<StatsRating> statsRating) {
+
+    // Wynik szczegółowy (Side Wins)
+    List<TeamSideWins> sideWins,
+
+    // Tabela wyników (Scoreboard) - to frontend wyświetla w pętli
+    List<PlayerStats> playerStats) {
 
   public static DemDetailsResponse from(Dem dem) {
     return new DemDetailsResponse(
         dem.getId(),
         dem.getMetadata().getCreatedAt(),
-        dem.getMetadata().getFinishedAt(),
         dem.getMetadata().getStatus(),
         dem.getHeader().mapName(),
         dem.getHeader().serverName(),
         dem.getTeamA(),
         dem.getTeamB(),
-        dem.getStatsAdr(),
-        dem.getStatsKast(),
-        dem.getStatsRating());
+        dem.getSideWins(),
+        dem.getPlayerStats() // <-- Czysta lista prosto z domeny
+        );
   }
 }
