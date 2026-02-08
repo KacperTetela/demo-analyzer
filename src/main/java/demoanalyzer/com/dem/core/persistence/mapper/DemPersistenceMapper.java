@@ -22,75 +22,57 @@ public class DemPersistenceMapper {
     if (dem == null) return null;
 
     return DemEntity.builder()
-        .id(dem.getId())
-        .metadata(mapMetadataToEntity(dem.getMetadata()))
-        .header(mapHeaderToEntity(dem.getHeader()))
+            .id(dem.getId())
+            .metadata(mapMetadataToEntity(dem.getMetadata()))
+            .header(mapHeaderToEntity(dem.getHeader()))
+            .teamA(dem.getTeamA())
+            .teamB(dem.getTeamB())
 
-        // --- Zespoły ---
-        .teamA(dem.getTeamA())
-        .teamB(dem.getTeamB())
-
-        // --- Nowe statystyki analityczne (JSONB) ---
-        .entryFrags(dem.getEntryFrags())
-        .clutches(dem.getClutches())
-        .tradeKills(dem.getTradeKills())
-        .sideWins(dem.getSideWins())
-
-        // --- Statystyki szczegółowe (JSONB) ---
-        .statsAdr(dem.getStatsAdr())
-        .statsKast(dem.getStatsKast())
-        .statsRating(dem.getStatsRating())
-        .build();
+            // Mapujemy tylko to, co zostało w encji
+            .playerStats(dem.getPlayerStats())
+            .sideWins(dem.getSideWins())
+            .build();
   }
 
   public Dem toDomain(DemEntity entity) {
     if (entity == null) return null;
 
     return Dem.builder()
-        .id(entity.getId())
-        .metadata(mapMetadataToDomain(entity.getMetadata()))
-        .header(mapHeaderToDomain(entity.getHeader()))
+            .id(entity.getId())
+            .metadata(mapMetadataToDomain(entity.getMetadata()))
+            .header(mapHeaderToDomain(entity.getHeader()))
+            .teamA(entity.getTeamA())
+            .teamB(entity.getTeamB())
 
-        // --- Zespoły ---
-        .teamA(entity.getTeamA())
-        .teamB(entity.getTeamB())
+            // Mapujemy tylko to, co odczytaliśmy z bazy
+            .playerStats(entity.getPlayerStats())
+            .sideWins(entity.getSideWins())
 
-        // --- Nowe statystyki analityczne ---
-        .entryFrags(entity.getEntryFrags())
-        .clutches(entity.getClutches())
-        .tradeKills(entity.getTradeKills())
-        .sideWins(entity.getSideWins())
-
-        // --- Statystyki szczegółowe ---
-        .statsAdr(entity.getStatsAdr())
-        .statsKast(entity.getStatsKast())
-        .statsRating(entity.getStatsRating())
-        .build();
+            // Pozostałe listy w Domenie (np. statsAdr) zostaną zainicjalizowane
+            // jako puste listy przez Buildera klasy Dem (jeśli ich nie podamy),
+            // co jest poprawnym zachowaniem, bo nie przechowujemy ich już w bazie.
+            .build();
   }
 
-  // --- Metody pomocnicze (bez zmian) ---
+  // --- Metody pomocnicze ---
 
   private MetadataEntity mapMetadataToEntity(Metadata metadata) {
     if (metadata == null) return null;
 
-    /*
-     * Retrieves a proxy reference to the AuthUserEntity to establish the relationship without
-     * triggering an unnecessary database fetch.
-     */
     AuthUserEntity ownerRef =
-        entityManager.getReference(AuthUserEntity.class, metadata.getOwnerId());
+            entityManager.getReference(AuthUserEntity.class, metadata.getOwnerId());
 
     return new MetadataEntity(
-        ownerRef, metadata.getCreatedAt(), metadata.getFinishedAt(), metadata.getStatus());
+            ownerRef, metadata.getCreatedAt(), metadata.getFinishedAt(), metadata.getStatus());
   }
 
   private Metadata mapMetadataToDomain(MetadataEntity entity) {
     if (entity == null) return null;
     return new Metadata(
-        entity.getOwner().getId(),
-        entity.getCreatedAt(),
-        entity.getFinishedAt(),
-        entity.getStatus());
+            entity.getOwner().getId(),
+            entity.getCreatedAt(),
+            entity.getFinishedAt(),
+            entity.getStatus());
   }
 
   private HeaderEntity mapHeaderToEntity(Header header) {

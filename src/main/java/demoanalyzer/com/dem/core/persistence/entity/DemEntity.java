@@ -1,13 +1,7 @@
 package demoanalyzer.com.dem.core.persistence.entity;
 
-import demoanalyzer.com.dem.analyzer.api.model.Clutch;
-import demoanalyzer.com.dem.analyzer.api.model.Entry;
 import demoanalyzer.com.dem.analyzer.api.model.PlayerStats;
 import demoanalyzer.com.dem.analyzer.api.model.TeamSideWins;
-import demoanalyzer.com.dem.analyzer.api.model.trade.Trade;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsAdr;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsKast;
-import demoanalyzer.com.dem.core.domain.model.stats.StatsRating;
 import demoanalyzer.com.dem.core.domain.model.team.TeamInfo;
 import demoanalyzer.com.dem.core.persistence.entity.header.HeaderEntity;
 import demoanalyzer.com.dem.core.persistence.entity.metadata.MetadataEntity;
@@ -44,8 +38,6 @@ public class DemEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   private TeamInfo teamB;
 
-  // --- NOWE POLA ---
-
   @Builder.Default
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
@@ -55,18 +47,4 @@ public class DemEntity {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   private List<TeamSideWins> sideWins = new ArrayList<>();
-
-  // --- STARE POLA (Możesz zostawić jako backup danych surowych) ---
-
-  @Builder.Default
-  @JdbcTypeCode(SqlTypes.JSON)
-  private List<StatsAdr> statsAdr = new ArrayList<>();
-
-  @Builder.Default
-  @JdbcTypeCode(SqlTypes.JSON)
-  private List<StatsKast> statsKast = new ArrayList<>();
-
-  @Builder.Default
-  @JdbcTypeCode(SqlTypes.JSON)
-  private List<StatsRating> statsRating = new ArrayList<>();
 }
