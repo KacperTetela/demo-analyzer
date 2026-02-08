@@ -25,8 +25,18 @@ public class DemPersistenceMapper {
         .id(dem.getId())
         .metadata(mapMetadataToEntity(dem.getMetadata()))
         .header(mapHeaderToEntity(dem.getHeader()))
+
+        // --- Zespoły ---
         .teamA(dem.getTeamA())
         .teamB(dem.getTeamB())
+
+        // --- Nowe statystyki analityczne (JSONB) ---
+        .entryFrags(dem.getEntryFrags())
+        .clutches(dem.getClutches())
+        .tradeKills(dem.getTradeKills())
+        .sideWins(dem.getSideWins())
+
+        // --- Statystyki szczegółowe (JSONB) ---
         .statsAdr(dem.getStatsAdr())
         .statsKast(dem.getStatsKast())
         .statsRating(dem.getStatsRating())
@@ -40,18 +50,30 @@ public class DemPersistenceMapper {
         .id(entity.getId())
         .metadata(mapMetadataToDomain(entity.getMetadata()))
         .header(mapHeaderToDomain(entity.getHeader()))
+
+        // --- Zespoły ---
         .teamA(entity.getTeamA())
         .teamB(entity.getTeamB())
+
+        // --- Nowe statystyki analityczne ---
+        .entryFrags(entity.getEntryFrags())
+        .clutches(entity.getClutches())
+        .tradeKills(entity.getTradeKills())
+        .sideWins(entity.getSideWins())
+
+        // --- Statystyki szczegółowe ---
         .statsAdr(entity.getStatsAdr())
         .statsKast(entity.getStatsKast())
         .statsRating(entity.getStatsRating())
         .build();
   }
 
+  // --- Metody pomocnicze (bez zmian) ---
+
   private MetadataEntity mapMetadataToEntity(Metadata metadata) {
     if (metadata == null) return null;
 
-    /**
+    /*
      * Retrieves a proxy reference to the AuthUserEntity to establish the relationship without
      * triggering an unnecessary database fetch.
      */
