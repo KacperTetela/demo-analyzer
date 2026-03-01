@@ -18,8 +18,8 @@ Here is a glimpse of the application's interface:
 <p align="center"><em>Secure authentication powered by Spring Security and dual JWT (Access & Refresh tokens).</em></p>
 
 ### User Account Panel
-![User Account Panel](<img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/909fab20-78cd-4b15-977d-ceefc44f023c" />
-)
+<img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/909fab20-78cd-4b15-977d-ceefc44f023c" />
+
 *Manage your credentials securely, including email and password updates.*
 
 ### Main Menu & Uploading Demos
