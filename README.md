@@ -25,15 +25,15 @@ Here is a glimpse of the application's interface:
 *Manage your credentials securely, including email and password updates.*
 
 ### Main Menu & Uploading Demos
-![Upload Menu](docs/images/upload.png)
+<img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/b835f8ce-c049-416b-8307-cc4e19fc92aa" />
 *Intuitive Drag & Drop interface for uploading `.dem` files directly to the parser.*
 
 ### Demo History
-![Demo History](docs/images/history.png)
+<img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/08e8742d-9769-42fa-8867-dd52f168870b" />
 *Personalized history panel tracking all previously analyzed matches.*
 
 ### Analyzed Demo Dashboard
-![Analyzed Demo](docs/images/dashboard.png)
+<img width="886" height="732" alt="image" src="https://github.com/user-attachments/assets/a95d51a0-a08a-48c2-a74a-d8c4a598299a" />
 *Advanced match dashboard presenting crucial e-sports metrics such as Entry Kills, Trade Kills, Clutches, KAST, and ADR to evaluate tactical roles and player performance.*
 
 ## ✨ Features
