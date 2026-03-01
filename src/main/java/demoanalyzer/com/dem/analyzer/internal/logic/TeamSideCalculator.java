@@ -48,6 +48,10 @@ public class TeamSideCalculator {
       if (winnerSide == null) continue; // Pomijamy błędy lub remisy
 
       // Sprawdzamy, gdzie był Team A w tej rundzie
+      /*
+      sdsdsdsd
+       */
+
       String currentSideOfTeamA = getSideForRound(teamAStartingSide, round.roundNum());
 
       if (currentSideOfTeamA.equalsIgnoreCase(winnerSide)) {
