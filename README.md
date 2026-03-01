@@ -12,8 +12,10 @@ Here is a glimpse of the application's interface:
 
 ### Authentication (Login & Registration)
 <p align="center">
-  <img src="docs/images/login.png" width="45%" alt="Login Screen" />
-  <img src="docs/images/registration.png" width="45%" alt="Registration Screen" />
+  
+
+  <img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/c667e06f-cec1-434c-b98f-fa41cd399d22" width="45%" alt="Login Screen" />
+  <img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/cae99f13-c9a3-4f40-905c-3d17fb930360" width="45%" alt="Registration Screen" />
 </p>
 <p align="center"><em>Secure authentication powered by Spring Security and dual JWT (Access & Refresh tokens).</em></p>
 
