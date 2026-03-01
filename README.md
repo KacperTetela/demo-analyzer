@@ -1,24 +1,70 @@
-# Demo Analyzer
+# Counter-Strike 2 Dem Analyzer
 
-**Status:** 🚧 In development
+**Status:** 🚧 In development / Active
 
-Demo Analyzer is a modular tool designed for parsing and analyzing Counter-Strike 2 demo files (`.dem`).  
-It leverages the [AWPY](https://awpy.readthedocs.io/en/latest/index.html) library to extract detailed in-game events, player data, and round statistics.
+Dem Analyzer is a comprehensive, modular web application designed for parsing, analyzing, and visualizing Counter-Strike 2 demo files (`.dem`). 
 
-## Features (in progress)
+The system leverages a distributed architecture. It utilizes a Python-based microservice with the [AWPY](https://awpy.readthedocs.io/en/latest/index.html) library to extract detailed in-game events, which are then processed by a robust Java Spring Boot backend and visualized in a modern React frontend.
 
-- `analyzer` domain: under active development; performs higher-level analysis such as:
-  - First kill detection and its impact on round outcome
-  - Clutch detection (1vX situations)
-  - Server metadata and round flow tracking
+## 📸 Screenshots
 
-## Technologies
+Here is a glimpse of the application's interface:
 
+### Authentication (Login & Registration)
+<p align="center">
+  <img src="docs/images/login.png" width="45%" alt="Login Screen" />
+  <img src="docs/images/registration.png" width="45%" alt="Registration Screen" />
+</p>
+<p align="center"><em>Secure authentication powered by Spring Security and dual JWT (Access & Refresh tokens).</em></p>
+
+### User Account Panel
+![User Account Panel](<img width="886" height="423" alt="image" src="https://github.com/user-attachments/assets/909fab20-78cd-4b15-977d-ceefc44f023c" />
+)
+*Manage your credentials securely, including email and password updates.*
+
+### Main Menu & Uploading Demos
+![Upload Menu](docs/images/upload.png)
+*Intuitive Drag & Drop interface for uploading `.dem` files directly to the parser.*
+
+### Demo History
+![Demo History](docs/images/history.png)
+*Personalized history panel tracking all previously analyzed matches.*
+
+### Analyzed Demo Dashboard
+![Analyzed Demo](docs/images/dashboard.png)
+*Advanced match dashboard presenting crucial e-sports metrics such as Entry Kills, Trade Kills, Clutches, KAST, and ADR to evaluate tactical roles and player performance.*
+
+## ✨ Features
+
+- **Advanced Match Analytics:** Extracts high-level metrics (First kill detection, 1vX Clutch detection, Trade kills, KAST, ADR) that go beyond the standard CS2 scoreboard.
+- **Secure Authentication:** Dual-token JWT system (Access + Refresh tokens) combined with a server-side token blacklist.
+- **User Management:** Registration, login, and secure credential updates.
+- **Match History:** Dedicated, isolated history for each user to review past games.
+- **Modular DDD Architecture:** Built strictly using Domain-Driven Design (DDD) and Hexagonal Architecture (Ports and Adapters) for high maintainability and scalability.
+- **Hybrid Database Approach:** Complex match statistics are stored as `JSONB` documents in PostgreSQL to drastically optimize read performance.
+
+## 🛠️ Technologies
+
+**Backend (Core API):**
 - Java 17+
+- Spring Boot 3 & Spring Security
+- Spring Data JPA
+- PostgreSQL (Relational + JSONB structures)
 - Maven
-- AWPY (Python-based parser used via integration)
-- Modular architecture with domain-driven design (DDD) principles
+
+**Parser Microservice:**
+- Python 3+
+- FastAPI
+- [AWPY](https://awpy.readthedocs.io/en/latest/index.html) (CS2 parser)
+
+**Frontend:**
+- React (Single Page Application)
+- JavaScript, HTML, CSS
+
+**Infrastructure & Deployment:**
+- Docker & Docker Compose
+- Coolify (CI/CD)
 
 ---
 
-**Note:** This project is still in its early stages. Functionality is being actively developed and tested.
+**Note:** This project is actively developed. Functionality is being continuously expanded and tested. Feel free to explore the code or open issues!
